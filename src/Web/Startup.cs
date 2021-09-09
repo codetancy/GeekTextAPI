@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Web.Options;
+using Web.Repositories.Interfaces;
+using Web.Repositories.Locals;
 
 namespace Web
 {
@@ -28,6 +30,9 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             var swaggerOptions = Configuration.GetSection(nameof(SwaggerOptions)).Get<SwaggerOptions>();
+
+            services.AddScoped<ITestRepository, LocalTestRepository>();
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
