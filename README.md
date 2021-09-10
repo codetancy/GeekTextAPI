@@ -1,6 +1,6 @@
 # GeekTextAPI
 
-GeekText is Web API in .NET for an online bookstore with.
+GeekText is Web API in .NET for an online bookstore.
 
 ## Technologies
 
