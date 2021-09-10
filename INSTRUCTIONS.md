@@ -8,7 +8,8 @@ website. For this project we are using .NET 5.0, so make sure to select the
 correct installer for your specific operating system. 
 
 Once the download completes, run the installer and follow the steps. 
-When done, open a new command prompt and run the `dotnet --version` command, this should display the installed version.
+When done, open a new command prompt and run the `dotnet --version` command, 
+this should display the installed version.
 
 ## Pick an editor
 
@@ -20,8 +21,8 @@ three most common:
 Perhaps the most popular IDE and easiest way to get started. Download the 
 community version for free from Microsoft's [website](https://visualstudio.microsoft.com/). 
 
-To install, please follow Microsoft's [step by step instructions](https://docs.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2019). For our use case, 
-select the following workloads: 
+To install, please follow Microsoft's [step by step instructions](https://docs.microsoft.com/en-us/visualstudio/install/install-visual-studio?view=vs-2019). 
+For our use case, select the following workloads: 
 - ASPNET and web development.
 - .NET desktop development.
 
