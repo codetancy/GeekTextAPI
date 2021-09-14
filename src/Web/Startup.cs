@@ -32,6 +32,7 @@ namespace Web
             var swaggerOptions = Configuration.GetSection(nameof(SwaggerOptions)).Get<SwaggerOptions>();
 
             services.AddScoped<ITestRepository, LocalTestRepository>();
+            services.AddScoped<IBookRepository, LocalBookRepository>();
             
             services.AddControllers();
             services.AddSwaggerGen(c =>
