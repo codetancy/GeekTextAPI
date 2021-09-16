@@ -51,5 +51,18 @@ namespace Web.Controllers.V1
             var deleted = await _testRepository.DeleteTest(testId);
             return deleted ? NoContent() : NotFound();
         }
+
+        [HttpPut("{testId:int}")]
+        public async Task<IActionResult> Update([FromBody] UpdateTestRequest testRequest, [FromRoute] int testId)
+        {
+            var test = new Test
+            {
+                Id = testId,
+                Text = testRequest.Text
+            };
+            
+            var updated = await _testRepository.UpdateTest(test);
+            return updated ? Ok() : NotFound();
+        }
     }
 }
