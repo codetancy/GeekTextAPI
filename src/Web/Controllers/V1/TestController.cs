@@ -44,5 +44,12 @@ namespace Web.Controllers.V1
             
             return CreatedAtAction(nameof(GetById), new { testid = testId }, testRequest);
         }
+        
+        [HttpDelete("{testId:int}")]
+        public async Task<IActionResult> Create([FromRoute] int testId)
+        {
+            var deleted = await _testRepository.DeleteTest(testId);
+            return deleted ? NoContent() : NotFound();
+        }
     }
 }
