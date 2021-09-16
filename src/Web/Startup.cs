@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +16,8 @@ using Microsoft.OpenApi.Models;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
+using Web.Services;
+using Web.Services.Interfaces;
 
 namespace Web
 {
@@ -31,9 +35,9 @@ namespace Web
         {
             var swaggerOptions = Configuration.GetSection(nameof(SwaggerOptions)).Get<SwaggerOptions>();
 
-            services.AddScoped<ITestRepository, LocalTestRepository>();
-            services.AddScoped<IBookRepository, LocalBookRepository>();
-            
+            services.AddSingleton<ITestRepository, LocalTestRepository>();
+            services.AddSingleton<IBookRepository, LocalBookRepository>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
