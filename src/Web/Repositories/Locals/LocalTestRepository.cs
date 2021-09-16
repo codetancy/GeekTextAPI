@@ -31,14 +31,17 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(test);
         }
 
-        public async Task<bool> CreateTestAsync(Test test)
+        public async Task<int> CreateTestAsync(Test test)
         {
+            if (test.Id <= 0)
+                test.Id = _tests.Max(t => t.Id) + 1;
+            
             var existingTest = await GetTestByIdAsync(test.Id);
             if (existingTest is not null)
-                return await Task.FromResult(false);
+                return await Task.FromResult(0);
             
             _tests.Add(test);
-            return await Task.FromResult(true);
+            return await Task.FromResult(test.Id);
         }
 
         public async Task<bool> UpdateTest(Test test)
