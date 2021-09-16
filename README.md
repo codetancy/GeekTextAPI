@@ -34,7 +34,7 @@ one Web project, which will eventually be separated into smaller ones.
 
 ### Web
 
-- **Controllers:** Web API controllers separated by API version.
+- **Controllers:** API controllers separated by version.
 - **Data:** Entity Framework data context, model configurations, and migration history.
 - **Models:** Business level entities.
 - **Options:** Classes that map our `appsettings.json` configurations.
