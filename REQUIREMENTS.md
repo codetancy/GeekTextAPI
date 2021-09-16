@@ -1,6 +1,6 @@
-# Instructions
+# Requirements
 
-## Installation
+## .NET SDK
 
 Before we can build and run .NET apps, we need to 
 [download the .NET SDK](https://dotnet.microsoft.com/download) from Microsoft's 
@@ -51,20 +51,3 @@ in your machine.
 
 You can verify Docker was installed by running the command `docker` in your 
 terminal, which should display a list of optional parameters.
-
-### Running the container
-
-The `docker-compose.yml` file in the root directory contains the instructions 
-to build and run a network of images. A network is just a group of containers 
-that run together. Currently, our network only contains the 
-[SQL Server image](https://hub.docker.com/_/microsoft-mssql-server), which is 
-publicly available in docker hub; however, in the future we will containerize 
-our API and run it as part of the network.
-
-To run the network, enter the command `docker-compose up -d` in the same 
-directory of the docker-compose file. You can verify it is running, by entering 
-the command `docker ps`, which should list all the running containers. Finally, 
-you can stop a container by entering `docker-compose stop`.
-
-For more information on all the available commands, please refer to the 
-[Docker CLI documentation](https://docs.docker.com/engine/reference/commandline/cli/).
