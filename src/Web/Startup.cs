@@ -18,8 +18,6 @@ using Microsoft.OpenApi.Models;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
-using Web.Services;
-using Web.Services.Interfaces;
 
 namespace Web
 {
