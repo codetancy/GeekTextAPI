@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Models;
 using Web.Repositories.Interfaces;
-using Web.Services.Interfaces;
 
 namespace Web.Controllers.V1
 {
