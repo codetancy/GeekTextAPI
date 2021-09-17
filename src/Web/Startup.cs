@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +40,8 @@ namespace Web
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddSingleton<IBookRepository, LocalBookRepository>();
 
+            services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
