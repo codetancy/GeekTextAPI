@@ -8,6 +8,7 @@ GeekText is Web API in .NET for an online bookstore.
 - Entity Framework Core
 - Swagger
 - XUnit
+- FluentValidation
 - Docker
 - SQL Server
 
@@ -20,11 +21,13 @@ one Web project, which will eventually be separated into smaller ones.
 
 ### Web
 
+- **Contracts:** API contracts separated by version.
 - **Controllers:** API controllers separated by version.
 - **Data:** Entity Framework data context, model configurations, and migrations.
 - **Models:** Business level entities.
 - **Options:** Classes that map our `appsettings.json` configurations.
 - **Repositories:** Data access services (interfaces and implementations).
+- **Validators:** Model validation rules.
 
 ## License
 
