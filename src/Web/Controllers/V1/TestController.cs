@@ -23,7 +23,7 @@ namespace Web.Controllers.V1
             var tests = await _testRepository.GetTestsAsync();
             return Ok(tests);
         }
-        
+
         [HttpGet("{testId:int}")]
         public async Task<IActionResult> GetById([FromRoute] int testId)
         {
@@ -34,16 +34,16 @@ namespace Web.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTestRequest testRequest)
         {
-            var test = new Test {Text = testRequest.Text};
-            
+            var test = new Test { Text = testRequest.Text };
+
             var testId = await _testRepository.CreateTestAsync(test);
-        
+
             if (testId <= 0)
                 return BadRequest();
-            
+
             return CreatedAtAction(nameof(GetById), new { testid = testId }, testRequest);
         }
-        
+
         [HttpDelete("{testId:int}")]
         public async Task<IActionResult> Create([FromRoute] int testId)
         {
@@ -59,7 +59,7 @@ namespace Web.Controllers.V1
                 Id = testId,
                 Text = testRequest.Text
             };
-            
+
             var updated = await _testRepository.UpdateTest(test);
             return updated ? Ok() : NotFound();
         }

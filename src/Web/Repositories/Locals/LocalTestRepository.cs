@@ -9,7 +9,7 @@ namespace Web.Repositories.Locals
     public class LocalTestRepository : ITestRepository
     {
         private readonly List<Test> _tests;
-        
+
         public LocalTestRepository()
         {
             _tests = new List<Test>
@@ -19,7 +19,7 @@ namespace Web.Repositories.Locals
                 new() { Id = 3, Text = "Third" }
             };
         }
-        
+
         public async Task<List<Test>> GetTestsAsync()
         {
             return await Task.FromResult(_tests);
@@ -35,11 +35,11 @@ namespace Web.Repositories.Locals
         {
             if (test.Id <= 0)
                 test.Id = _tests.Max(t => t.Id) + 1;
-            
+
             var existingTest = await GetTestByIdAsync(test.Id);
             if (existingTest is not null)
                 return await Task.FromResult(0);
-            
+
             _tests.Add(test);
             return await Task.FromResult(test.Id);
         }
@@ -61,7 +61,7 @@ namespace Web.Repositories.Locals
 
             if (index < 0)
                 return await Task.FromResult(false);
-            
+
             _tests.RemoveAt(index);
             return true;
         }
