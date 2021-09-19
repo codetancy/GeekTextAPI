@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{080FB880-1B3E-4A90-B0D4-9223860F682D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "src\Web\Web.csproj", "{796C6964-C40D-4FE5-BBEE-E5E4202F656B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "src\Web\Web.csproj", "{796C6964-C40D-4FE5-BBEE-E5E4202F656B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{596943F3-DC91-484F-A577-AA7A8BBBF558}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,12 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{796C6964-C40D-4FE5-BBEE-E5E4202F656B} = {080FB880-1B3E-4A90-B0D4-9223860F682D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{796C6964-C40D-4FE5-BBEE-E5E4202F656B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -35,5 +34,14 @@ Global
 		{796C6964-C40D-4FE5-BBEE-E5E4202F656B}.Release|x64.Build.0 = Release|Any CPU
 		{796C6964-C40D-4FE5-BBEE-E5E4202F656B}.Release|x86.ActiveCfg = Release|Any CPU
 		{796C6964-C40D-4FE5-BBEE-E5E4202F656B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{796C6964-C40D-4FE5-BBEE-E5E4202F656B} = {080FB880-1B3E-4A90-B0D4-9223860F682D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A4E4390-2666-4912-91B8-EBCDD53A9ADE}
 	EndGlobalSection
 EndGlobal
