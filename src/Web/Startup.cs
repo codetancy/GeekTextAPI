@@ -1,10 +1,12 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Web.Data;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
@@ -27,6 +29,10 @@ namespace Web
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddSingleton<IBookRepository, LocalBookRepository>();
+
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
