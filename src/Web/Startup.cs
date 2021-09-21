@@ -26,6 +26,10 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             var swaggerOptions = Configuration.GetSection(nameof(SwaggerOptions)).Get<SwaggerOptions>();
+            var jwtOptions = Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+
+            services.AddSingleton(swaggerOptions);
+            services.AddSingleton(jwtOptions);
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddSingleton<IBookRepository, LocalBookRepository>();
