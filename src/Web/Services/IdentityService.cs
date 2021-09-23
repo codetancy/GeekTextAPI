@@ -24,9 +24,17 @@ namespace Web.Services
             _jwtOptions = jwtOptions;
         }
 
-        public async Task<AuthenticationResult> LoginAsync(string input, string password)
+        public async Task<AuthenticationResult> LoginAsync(string email, string password)
         {
-            return await Task.FromResult(new AuthenticationResult());
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return new AuthenticationResult { Succeed = false, Errors = new[] {$"No user with email {email}"} };
+
+            bool valid = await _userManager.CheckPasswordAsync(user, password);
+
+            return valid
+                ? new AuthenticationResult { Succeed = true, Token = GenerateJwtToken(user) }
+                : new AuthenticationResult { Succeed = false, Errors = new[] {"Incorrect credentials"} };
         }
 
         public async Task<AuthenticationResult> SignupAsync(string email, string userName, string password)
