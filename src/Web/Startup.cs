@@ -14,6 +14,8 @@ using Web.Data.Identities;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
+using Web.Services;
+using Web.Services.Interfaces;
 
 namespace Web
 {
@@ -37,6 +39,7 @@ namespace Web
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddSingleton<IBookRepository, LocalBookRepository>();
+            services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
