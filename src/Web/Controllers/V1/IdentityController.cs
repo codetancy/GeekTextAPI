@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
+using Web.Models;
 using Web.Services.Interfaces;
 
 namespace Web.Controllers.V1
@@ -19,9 +20,19 @@ namespace Web.Controllers.V1
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            return await Task.FromResult(Ok());
+            (string email, string password) = request;
+            var result = await _identityService.LoginAsync(email, password);
+
+            if (result.Succeed)
+            {
+                var succeedResponse = new AuthSucceedResponse(result.Token);
+                return Ok(succeedResponse);
+            }
+
+            var failedResponse = new AuthFailedResponse(result.Errors.ToList());
+            return BadRequest(failedResponse);
         }
 
         [HttpPost("logout")]
