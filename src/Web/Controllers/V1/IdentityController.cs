@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
-using Web.Models;
 using Web.Services.Interfaces;
 
 namespace Web.Controllers.V1
@@ -24,15 +23,9 @@ namespace Web.Controllers.V1
         {
             (string email, string password) = request;
             var result = await _identityService.LoginAsync(email, password);
-
-            if (result.Succeed)
-            {
-                var succeedResponse = new AuthSucceedResponse(result.Token);
-                return Ok(succeedResponse);
-            }
-
-            var failedResponse = new AuthFailedResponse(result.Errors.ToList());
-            return BadRequest(failedResponse);
+            return result.Succeed
+                ? Ok(new AuthSucceedResponse(result.Token))
+                : BadRequest(new AuthFailedResponse(result.Errors.ToList()));
         }
 
         [HttpPost("logout")]
@@ -46,15 +39,9 @@ namespace Web.Controllers.V1
         {
             (string email, string userName, string password) = request;
             var result = await _identityService.SignupAsync(email, userName, password);
-
-            if (result.Succeed)
-            {
-                var succeedResponse = new AuthSucceedResponse(result.Token);
-                return Ok(succeedResponse);
-            }
-
-            var failedResponse = new AuthFailedResponse(result.Errors.ToList());
-            return BadRequest(failedResponse);
+            return result.Succeed
+                ? Ok(new AuthSucceedResponse(result.Token))
+                : BadRequest(new AuthFailedResponse(result.Errors.ToList()));
         }
 
         [HttpPost("refresh")]
