@@ -9,7 +9,7 @@ namespace Web.Repositories.Interfaces
         Task<List<Test>> GetTestsAsync();
         Task<Test> GetTestByIdAsync(int testId);
         Task<int> CreateTestAsync(Test test);
-        Task<bool> UpdateTest(Test test);
-        Task<bool> DeleteTest(int testId);
+        Task<bool> UpdateTestAsync(Test test);
+        Task<bool> DeleteTestAsync(int testId);
     }
 }
