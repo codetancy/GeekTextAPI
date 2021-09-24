@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Models;
@@ -31,36 +32,35 @@ namespace Web.Controllers.V1
             return test is null ? BadRequest() : Ok(test);
         }
 
+        [Authorize]
+        [HttpGet("authorize")]
+        public async Task<IActionResult> IsAuthorized()
+        {
+            return await Task.FromResult(Ok("You are authorized!"));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTestRequest testRequest)
         {
             var test = new Test { Text = testRequest.Text };
-
-            var testId = await _testRepository.CreateTestAsync(test);
-
-            if (testId <= 0)
-                return BadRequest();
-
-            return CreatedAtAction(nameof(GetById), new { testid = testId }, testRequest);
+            int testId = await _testRepository.CreateTestAsync(test);
+            return testId > 0
+                ? CreatedAtAction(nameof(GetById), new { testid = testId }, testRequest)
+                : BadRequest();
         }
 
         [HttpDelete("{testId:int}")]
         public async Task<IActionResult> Create([FromRoute] int testId)
         {
-            var deleted = await _testRepository.DeleteTest(testId);
+            bool deleted = await _testRepository.DeleteTest(testId);
             return deleted ? NoContent() : NotFound();
         }
 
         [HttpPut("{testId:int}")]
         public async Task<IActionResult> Update([FromBody] UpdateTestRequest testRequest, [FromRoute] int testId)
         {
-            var test = new Test
-            {
-                Id = testId,
-                Text = testRequest.Text
-            };
-
-            var updated = await _testRepository.UpdateTest(test);
+            var test = new Test { Id = testId, Text = testRequest.Text };
+            bool updated = await _testRepository.UpdateTest(test);
             return updated ? Ok() : NotFound();
         }
     }
