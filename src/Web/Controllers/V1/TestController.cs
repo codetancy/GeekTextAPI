@@ -52,7 +52,7 @@ namespace Web.Controllers.V1
         [HttpDelete("{testId:int}")]
         public async Task<IActionResult> Create([FromRoute] int testId)
         {
-            bool deleted = await _testRepository.DeleteTest(testId);
+            bool deleted = await _testRepository.DeleteTestAsync(testId);
             return deleted ? NoContent() : NotFound();
         }
 
@@ -60,7 +60,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> Update([FromBody] UpdateTestRequest testRequest, [FromRoute] int testId)
         {
             var test = new Test { Id = testId, Text = testRequest.Text };
-            bool updated = await _testRepository.UpdateTest(test);
+            bool updated = await _testRepository.UpdateTestAsync(test);
             return updated ? Ok() : NotFound();
         }
     }

@@ -44,7 +44,7 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(test.Id);
         }
 
-        public async Task<bool> UpdateTest(Test test)
+        public async Task<bool> UpdateTestAsync(Test test)
         {
             var index = _tests.FindIndex(p => p.Id == test.Id);
 
@@ -55,7 +55,7 @@ namespace Web.Repositories.Locals
             return true;
         }
 
-        public async Task<bool> DeleteTest(int testId)
+        public async Task<bool> DeleteTestAsync(int testId)
         {
             var index = _tests.FindIndex(p => p.Id == testId);
 
