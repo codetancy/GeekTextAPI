@@ -29,7 +29,7 @@ namespace Web.Controllers.V1
                 books = await _bookRepository.GetBooksByGenreAsync(genreName);
 
             books = await _bookRepository.GetBooksAsync();
-            return Ok(books);
+            return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
         }
 
         // GET api/v1/books/2
