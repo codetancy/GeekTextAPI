@@ -46,6 +46,11 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(book);
         }
 
+        public async Task<List<Book>> GetBooksByGenreAsync(string genreName) {
+            var books = _books.Where(b => b.Genre.Name == genreName).ToList();
+            return await Task.FromResult(books);
+        }
 
+        public Task<List<Book>> GetBooksAsync(string genreName = null) => throw new System.NotImplementedException();
     }
 }

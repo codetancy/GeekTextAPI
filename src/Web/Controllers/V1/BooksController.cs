@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Web.Models;
 using Web.Repositories.Interfaces;
 
 namespace Web.Controllers.V1
@@ -19,7 +21,14 @@ namespace Web.Controllers.V1
         [HttpGet]
         public async Task<IActionResult> GetAllBooks([FromQuery] string genreName)
         {
-            var books = await _bookRepository.GetBooksAsync();
+            List<Book> books;
+
+            if (string.IsNullOrEmpty(genreName))
+                books = await _bookRepository.GetBooksAsync();
+            else
+                books = await _bookRepository.GetBooksByGenreAsync(genreName);
+
+            books = await _bookRepository.GetBooksAsync();
             return Ok(books);
         }
 
