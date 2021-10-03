@@ -14,20 +14,22 @@ namespace Web.Repositories.Locals
         {
             _books = new List<Book>
             {
-                new()
+                new Book
                 {
                     Id = 1,
                     Isbn = "ABC-123",
                     Authors = new(),
                     Price = 1.2m,
+                    Genre = new Genre(1, "Action"),
                     Synopsis = "First Book"
                 },
-                new()
+                new Book
                 {
                     Id = 2,
                     Isbn = "DEF-456",
                     Authors = new(),
                     Price = 4.2m,
+                    Genre = new Genre(2, "Romance"),
                     Synopsis = "Second Book"
                 }
             };
