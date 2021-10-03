@@ -15,9 +15,9 @@ namespace Web.Controllers.V1
             _bookRepository = bookRepository;
         }
 
-        // GET api/v1/books
+        // GET api/v1/books?genreName=Action
         [HttpGet]
-        public async Task<IActionResult> GetAllBooks()
+        public async Task<IActionResult> GetAllBooks([FromQuery] string genreName)
         {
             var books = await _bookRepository.GetBooksAsync();
             return Ok(books);
