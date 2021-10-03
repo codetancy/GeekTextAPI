@@ -50,7 +50,5 @@ namespace Web.Repositories.Locals
             var books = _books.Where(b => b.Genre.Name == genreName).ToList();
             return await Task.FromResult(books);
         }
-
-        public Task<List<Book>> GetBooksAsync(string genreName = null) => throw new System.NotImplementedException();
     }
 }

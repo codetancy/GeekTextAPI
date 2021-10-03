@@ -28,7 +28,6 @@ namespace Web.Controllers.V1
             else
                 books = await _bookRepository.GetBooksByGenreAsync(genreName);
 
-            books = await _bookRepository.GetBooksAsync();
             return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
         }
 
