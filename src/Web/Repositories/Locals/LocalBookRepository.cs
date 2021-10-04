@@ -22,6 +22,9 @@ namespace Web.Repositories.Locals
                     Price = 1.2m,
                     Genre = new Genre(1, "Action"),
                     Synopsis = "First Book"
+                    Copies = 5000,
+                    Yearpublished = 2011,
+                    Publisher = "FIU Publisher"
                 },
                 new Book
                 {
@@ -31,6 +34,9 @@ namespace Web.Repositories.Locals
                     Price = 4.2m,
                     Genre = new Genre(2, "Romance"),
                     Synopsis = "Second Book"
+                    Copies = 8000,
+                    Yearpublished = 2005,
+                    Publisher = "Jackie Publishing"
                 }
             };
         }
