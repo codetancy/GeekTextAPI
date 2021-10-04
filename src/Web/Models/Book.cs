@@ -20,7 +20,7 @@ namespace Web.Models
 
         public string Publisher { get; set; }
 
-        public int Yearpublished { get; set; }
+        public int YearPublished { get; set; }
 
         public List<Author> Authors { get; set; }
     }

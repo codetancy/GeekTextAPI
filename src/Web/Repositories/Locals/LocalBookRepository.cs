@@ -23,7 +23,7 @@ namespace Web.Repositories.Locals
                     Genre = new Genre(1, "Action"),
                     Synopsis = "First Book",
                     Copies = 5000,
-                    Yearpublished = 2011,
+                    YearPublished = 2011,
                     Publisher = "FIU Publisher"
                 },
                 new Book
@@ -35,7 +35,7 @@ namespace Web.Repositories.Locals
                     Genre = new Genre(2, "Romance"),
                     Synopsis = "Second Book",
                     Copies = 8000,
-                    Yearpublished = 2005,
+                    YearPublished = 2005,
                     Publisher = "Jackie Publishing"
                 }
             };
