@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
-using Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Web.Repositories.Interfaces;
-using Web.Repositories.Locals;
 
 namespace Web.Controllers.V1
 {
@@ -22,17 +18,15 @@ namespace Web.Controllers.V1
 
         //GET api/v1/wishlist
         [HttpGet]
-
-        public async Task<IActionResult> GetWishList()
+        public async Task<IActionResult> GetUserWishLists()
         {
-
-            var wishList = await _wishListRepository.GetWishListAsync();
+            var userId = Guid.NewGuid();
+            var wishList = await _wishListRepository.GetUserWishListsAsync(userId);
             return Ok(wishList);
         }
 
         //GET api/v1/wishlist/{wishListName}/books
-        [HttpGet("{wishListName:string}")]
-
+        [HttpGet("{wishListName}")]
         public async Task<IActionResult> GetWishListByName([FromRoute] string wishListName)
         {
             var wishList = await _wishListRepository.GetWishListByNameAsync(wishListName);

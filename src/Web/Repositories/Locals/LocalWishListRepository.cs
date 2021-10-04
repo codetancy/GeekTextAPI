@@ -17,13 +17,19 @@ namespace Web.Repositories.Locals
             {
                 new()
                 {
+                    UserId = Guid.NewGuid(),
                     Name = "Fiction Books",
-                    Description = "Fiction Books"
+                    Description = "Fiction Books",
+                    Books = new List<Book>
+                    {
+                        new Book { Id = 1 },
+                        new Book { Id = 2 }
+                    }
                 }
             };
         }
 
-        public async Task<List<WishList>> GetWishListsAsync()
+        public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
         {
             return await Task.FromResult(_wishList);
         }
@@ -33,8 +39,5 @@ namespace Web.Repositories.Locals
             var wishList = _wishList.SingleOrDefault(wishList => wishList.Name == wishListName);
             return await Task.FromResult(wishList);
         }
-
-        Task<List<WishList>> IWishListRepository.GetWishListAsync() => throw new NotImplementedException();
-        Task<WishList> IWishListRepository.GetWishListByNameAsync(string wishListName) => throw new NotImplementedException();
     }
 }

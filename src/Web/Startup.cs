@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +41,7 @@ namespace Web
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddSingleton<IBookRepository, LocalBookRepository>();
             services.AddSingleton<IAuthorRepository, LocalAuthorRepository>();
+            services.AddSingleton<IWishListRepository, LocalWishListRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
@@ -101,7 +103,7 @@ namespace Web
                 c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { securityScheme, System.Array.Empty<string>() }
+                    { securityScheme, Array.Empty<string>() }
                 });
             });
         }
