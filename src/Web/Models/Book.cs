@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Web.Models
 {
@@ -13,7 +13,13 @@ namespace Web.Models
         public decimal Price { get; set; }
 
         public Genre Genre { get; set; }
+        
+        public int Copies{ get; set; }
 
+        public string Publisher { get; set; }
+
+        public int Yearpublished { get; set; }
+        
         public List<Author> Authors { get; set; }
     }
 }
