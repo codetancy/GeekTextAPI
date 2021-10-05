@@ -42,6 +42,7 @@ namespace Web
             services.AddSingleton<IBookRepository, LocalBookRepository>();
             services.AddSingleton<IAuthorRepository, LocalAuthorRepository>();
             services.AddSingleton<IWishListRepository, LocalWishListRepository>();
+            services.AddSingleton<ICartRepository, LocalCartRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
