@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Repositories.Interfaces;
 
@@ -15,7 +16,6 @@ namespace Web.Controllers.V1
             _authorRepository = authorRepository;
         }
 
-        // GET api/v1/authors
         [HttpGet]
         public async Task<IActionResult> GetAllAuthors()
         {
@@ -23,9 +23,8 @@ namespace Web.Controllers.V1
             return Ok(authors);
         }
 
-        // GET api/v1/authors/{AuthorID}
-        [HttpGet("{authorId:int}")]
-        public async Task<IActionResult> GetBookById([FromRoute] int authorId)
+        [HttpGet("{authorId:guid}")]
+        public async Task<IActionResult> GetBookById([FromRoute] Guid authorId)
         {
             var author = await _authorRepository.GetAuthorsByIdAsync(authorId);
 

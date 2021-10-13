@@ -17,27 +17,25 @@ namespace Web.Repositories.Locals
             {
                 new Book
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("6c49814a-c3ce-4947-8fa4-993f37bc31d1"),
+                    Title = "The Hunger Games",
                     Isbn = "ABC-123",
-                    Authors = null,
-                    Price = 1.2m,
-                    Genre = new Genre(1, "Action"),
+                    UnitPrice = 1.2m,
+                    Genre = new Genre { Name = "Dystopic" },
                     Synopsis = "First Book",
-                    Copies = 5000,
+                    CopiesSold = 5000,
                     YearPublished = 2011,
-                    Publisher = "FIU Publisher"
                 },
                 new Book
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("6c4fe33d-2f6c-4768-bace-32fe5127e0a4"),
+                    Title = "Harry Potter: The Prisoner of Azkaban",
                     Isbn = "DEF-456",
-                    Authors = null,
-                    Price = 4.2m,
-                    Genre = new Genre(2, "Romance"),
+                    UnitPrice = 4.2m,
+                    Genre = new Genre { Name = "Magic" },
                     Synopsis = "Second Book",
-                    Copies = 8000,
+                    CopiesSold = 8000,
                     YearPublished = 2005,
-                    Publisher = "Jackie Publishing"
                 }
             };
         }

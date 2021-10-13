@@ -5,10 +5,10 @@ namespace Web.Models
 {
     public class WishList
     {
-        public Guid UserId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public Guid UserId { get; set; }
 
-        public List<Book> Books { get; set; }
+        public ICollection<WishListBook> WishListBooks { get; set; }
     }
 }

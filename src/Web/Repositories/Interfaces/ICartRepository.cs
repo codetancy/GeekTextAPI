@@ -8,6 +8,6 @@ namespace Web.Repositories.Interfaces
     public interface ICartRepository
     {
         Task<Cart> GetCartByUserIdAsync(Guid userId);
-        Task<List<Book>> AddBookToCart(Guid cartId, Guid bookId);
+        Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
@@ -16,11 +17,17 @@ namespace Web.Repositories.Locals
             {
                 new()
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
+                    Forename = "Joanne",
+                    Surname = "Rowling",
+                    PenName = "J.K. Rowling"
                 },
                 new()
                 {
-                    Id = 2,
+                    Id = Guid.NewGuid(),
+                    Forename = "Gabriel",
+                    Surname = "Garcia Marquez",
+                    PenName = "Gabriel Garcia Marquez"
                 }
             };
         }
@@ -30,9 +37,9 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(_author);
         }
 
-        public async Task<Author> GetAuthorsByIdAsync(int authorId)
+        public async Task<Author> GetAuthorsByIdAsync(Guid authorId)
         {
-            var author = _author.SingleOrDefault(author => author.Id == authorId);
+            var author = _author.SingleOrDefault(a => a.Id == authorId);
             return await Task.FromResult(author);
         }
     }
