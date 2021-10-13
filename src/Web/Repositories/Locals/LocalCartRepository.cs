@@ -52,7 +52,9 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(cart);
         }
 
-        public async Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId)
+        public Task<bool> CreateCartForUserAsync(Guid userId, Cart cart) => throw new NotImplementedException();
+
+        public async Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId, int quantity)
         {
             var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
             if (cart == null)
@@ -70,7 +72,7 @@ namespace Web.Repositories.Locals
             if (cartContainsBook)
             {
                 var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
-                cartBook.Quantity += 1;
+                cartBook.Quantity += quantity;
             }
             else
             {
@@ -79,5 +81,7 @@ namespace Web.Repositories.Locals
 
             return await Task.FromResult(cart.CartBooks.ToList());
         }
+
+        public Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId) => throw new NotImplementedException();
     }
 }
