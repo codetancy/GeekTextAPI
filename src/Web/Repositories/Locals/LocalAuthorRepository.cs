@@ -37,10 +37,16 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(_author);
         }
 
-        public async Task<Author> GetAuthorsByIdAsync(Guid authorId)
+        public async Task<Author> GetAuthorByIdAsync(Guid authorId)
         {
             var author = _author.SingleOrDefault(a => a.Id == authorId);
             return await Task.FromResult(author);
         }
+
+        public Task<bool> CreateAuthorAsync(Author author) => throw new NotImplementedException();
+
+        public Task<bool> UpdateAuthorAsync(Author author) => throw new NotImplementedException();
+
+        public Task<bool> DeleteAuthorAsync(Guid authorId) => throw new NotImplementedException();
     }
 }

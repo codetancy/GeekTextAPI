@@ -26,7 +26,7 @@ namespace Web.Controllers.V1
         [HttpGet("{authorId:guid}")]
         public async Task<IActionResult> GetBookById([FromRoute] Guid authorId)
         {
-            var author = await _authorRepository.GetAuthorsByIdAsync(authorId);
+            var author = await _authorRepository.GetAuthorByIdAsync(authorId);
 
             if (author is null)
                 return BadRequest();

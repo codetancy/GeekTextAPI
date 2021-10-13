@@ -8,6 +8,9 @@ namespace Web.Repositories.Interfaces
     public interface IAuthorRepository
     {
         Task<List<Author>> GetAllAuthorsAsync();
-        Task<Author> GetAuthorsByIdAsync(Guid authorId);
+        Task<Author> GetAuthorByIdAsync(Guid authorId);
+        Task<bool> CreateAuthorAsync(Author author);
+        Task<bool> UpdateAuthorAsync(Author author);
+        Task<bool> DeleteAuthorAsync(Guid authorId);
     }
 }
