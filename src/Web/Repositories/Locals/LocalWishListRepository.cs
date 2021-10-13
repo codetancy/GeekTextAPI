@@ -55,5 +55,13 @@ namespace Web.Repositories.Locals
             var wishList = _wishList.SingleOrDefault(w => w.Name == wishListName);
             return await Task.FromResult(wishList);
         }
+
+        public Task<WishList> CreateWishListAsync(string wishListName, Guid userId) => throw new NotImplementedException();
+
+        public Task<bool> DeleteWishListAsync(string wishListName) => throw new NotImplementedException();
+
+        public Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId) => throw new NotImplementedException();
+
+        public Task<bool> RemoveBookFromWishListAsync(string wishListName, Guid bookId) => throw new NotImplementedException();
     }
 }

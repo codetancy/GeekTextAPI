@@ -9,6 +9,7 @@ namespace Web.Models
 
         public string TypeName { get; set; }
         public PaymentType Type { get; set; }
+
         public Card Card { get; set; }
     }
 }
