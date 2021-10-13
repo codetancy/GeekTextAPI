@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
@@ -16,9 +17,9 @@ namespace Web.Repositories.Locals
             {
                 new Book
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Isbn = "ABC-123",
-                    Authors = new(),
+                    Authors = null,
                     Price = 1.2m,
                     Genre = new Genre(1, "Action"),
                     Synopsis = "First Book",
@@ -28,9 +29,9 @@ namespace Web.Repositories.Locals
                 },
                 new Book
                 {
-                    Id = 2,
+                    Id = Guid.NewGuid(),
                     Isbn = "DEF-456",
-                    Authors = new(),
+                    Authors = null,
                     Price = 4.2m,
                     Genre = new Genre(2, "Romance"),
                     Synopsis = "Second Book",
@@ -46,9 +47,9 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(_books);
         }
 
-        public async Task<Book> GetBookByIdAsync(int bookId)
+        public async Task<Book> GetBookByIdAsync(Guid bookId)
         {
-            var book = _books.SingleOrDefault(book => book.Id == bookId);
+            var book = _books.SingleOrDefault(b => b.Id == bookId);
             return await Task.FromResult(book);
         }
 

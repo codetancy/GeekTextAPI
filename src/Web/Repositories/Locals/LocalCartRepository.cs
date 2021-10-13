@@ -14,7 +14,7 @@ namespace Web.Repositories.Locals
         public LocalCartRepository(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
-            _cart = new List<Cart> 
+            _cart = new List<Cart>
             {
                 new()
                 {
@@ -23,27 +23,33 @@ namespace Web.Repositories.Locals
                     Subtotal = 99.95,
                     Books = new List<Book>
                     {
-                        new Book { Id = 1},
-                        new Book { Id = 2}
+                        new Book { Id = Guid.NewGuid() },
+                        new Book { Id = Guid.NewGuid() }
                     }
                 }
             };
         }
 
-        public async Task<Cart> GetCartByUserIdAsync(Guid cartUserID)
+        public async Task<Cart> GetCartByUserIdAsync(Guid cartUserId)
         {
-            var cart = _cart.SingleOrDefault(cart => cart.UserId == cartUserID);
+            var cart = _cart.SingleOrDefault(c => c.UserId == cartUserId);
             return await Task.FromResult(cart);
         }
-        
-        public async Task<List<Book>> AddBookToCart(Guid cartId, int bookId)
-        {   
+
+        public async Task<List<Book>> AddBookToCart(Guid cartId, Guid bookId)
+        {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null)
+            if (book == null)
             {
                 return null;
             }
-            var cart = _cart.SingleOrDefault(cart => cartId == cart.CartId);
+
+            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
+            if (cart == null)
+            {
+                return null;
+            }
+
             cart.Books.Add(new Book { Id = bookId });
             return await Task.FromResult(cart.Books);
         }

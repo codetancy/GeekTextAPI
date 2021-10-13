@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Web.Models;
 
@@ -8,6 +9,6 @@ namespace Web.Repositories.Interfaces
     {
         Task<List<Book>> GetBooksAsync();
         Task<List<Book>> GetBooksByGenreAsync(string genreName);
-        Task<Book> GetBookByIdAsync(int bookId);
+        Task<Book> GetBookByIdAsync(Guid bookId);
     }
 }

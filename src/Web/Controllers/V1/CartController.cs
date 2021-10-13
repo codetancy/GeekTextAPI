@@ -26,16 +26,15 @@ namespace Web.Controllers.V1
         }
 
         // POST api/v1/cart/books/{bookId}
-        [HttpPost("books/{bookId:int}")]
-        public async Task<IActionResult> AddBookToCart([FromRoute] int bookId)
+        [HttpPost("books/{bookId:guid}")]
+        public async Task<IActionResult> AddBookToCart([FromRoute] Guid bookId)
         {
             var cartId = Guid.Parse("3304f724-dbfd-45f3-9737-ccd0b28929d6");
             var books = await _cartRepository.AddBookToCart(cartId, bookId);
 
-            if(books == null){
-                return BadRequest($"There's not a book with ID {bookId}");
-            }
-            return Ok(books);
+            return books == null
+                ? NotFound($"Book with ID {bookId} does not exist.")
+                : Ok(books);
         }
     }
 }

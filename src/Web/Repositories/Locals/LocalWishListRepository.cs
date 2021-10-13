@@ -22,8 +22,8 @@ namespace Web.Repositories.Locals
                     Description = "Fiction Books",
                     Books = new List<Book>
                     {
-                        new Book { Id = 1 },
-                        new Book { Id = 2 }
+                        new Book { Id = Guid.NewGuid() },
+                        new Book { Id = Guid.NewGuid() }
                     }
                 }
             };
@@ -36,7 +36,7 @@ namespace Web.Repositories.Locals
 
         public async Task<WishList> GetWishListByNameAsync(string wishListName)
         {
-            var wishList = _wishList.SingleOrDefault(wishList => wishList.Name == wishListName);
+            var wishList = _wishList.SingleOrDefault(w => w.Name == wishListName);
             return await Task.FromResult(wishList);
         }
     }
