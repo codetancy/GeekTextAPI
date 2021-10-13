@@ -10,5 +10,9 @@ namespace Web.Repositories.Interfaces
         Task<List<Book>> GetBooksAsync();
         Task<List<Book>> GetBooksByGenreAsync(string genreName);
         Task<Book> GetBookByIdAsync(Guid bookId);
+        Task<Book> GetBookByIsbnAsync(string bookIsbn);
+        Task<bool> CreateBookAsync(Book book);
+        Task<bool> UpdateBookAsync(Book book);
+        Task<bool> DeleteBookAsync(Guid bookId);
     }
 }
