@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Web.Data.Identities;
+using Web.Models;
 
 namespace Web.Data.Configuration
 {
@@ -8,10 +9,19 @@ namespace Web.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.HasMany(u => u.UserRoles)
-                .WithOne(ur => ur.User)
-                .HasForeignKey(ur => ur.UserId)
+            // Keys
+
+            // Properties
+
+            // Relationships
+            builder.HasMany(user => user.UserRoles)
+                .WithOne(userRole => userRole.User)
+                .HasForeignKey(userRole => userRole.UserId)
                 .IsRequired();
+
+            builder.HasOne(user => user.Profile)
+                .WithOne()
+                .HasForeignKey<UserProfile>(profile => profile.UserId);
         }
     }
 }
