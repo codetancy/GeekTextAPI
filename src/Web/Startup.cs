@@ -15,6 +15,7 @@ using Web.Data.Identities;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
+using Web.Repositories.SqlServer;
 using Web.Services;
 using Web.Services.Interfaces;
 
@@ -39,10 +40,10 @@ namespace Web
             services.AddSingleton(jwtOptions);
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
-            services.AddSingleton<IBookRepository, LocalBookRepository>();
-            services.AddSingleton<IAuthorRepository, LocalAuthorRepository>();
-            services.AddSingleton<IWishListRepository, LocalWishListRepository>();
-            services.AddSingleton<ICartRepository, LocalCartRepository>();
+            services.AddScoped<IBookRepository, SqlServerBookRepository>();
+            services.AddScoped<IAuthorRepository, SqlServerAuthorRepository>();
+            services.AddScoped<IWishListRepository, SqlServerWishListRepository>();
+            services.AddScoped<ICartRepository, SqlServerCartRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
