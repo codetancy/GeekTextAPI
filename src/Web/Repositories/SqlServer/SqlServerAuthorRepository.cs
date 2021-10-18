@@ -28,7 +28,7 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.Authors.SingleOrDefaultAsync(author => author.Id == authorId);
         }
 
-        public Task<bool> CreateAuthorAsync(Author author)
+        public async Task<bool> CreateAuthorAsync(Author author)
         {
             /*
              * TODO: Logan - Implement adding an author
@@ -36,12 +36,15 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return true if any record was modified, else false
              */
-            throw new NotImplementedException();
+
+            await _dbContext.Authors.AddAsync(author);
+            int changed = await _dbContext.SaveChangesAsync();
+            return changed > 0;
         }
 
         public Task<bool> UpdateAuthorAsync(Author author) => throw new NotImplementedException();
 
-        public Task<bool> DeleteAuthorAsync(Guid authorId)
+        public async Task<bool> DeleteAuthorAsync(Guid authorId)
         {
             /*
              * TODO: Logan - Implement deleting an author
@@ -50,7 +53,15 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly, return true if any record was modified, else false
              */
-            throw new NotImplementedException();
+
+            var authorToDelete = await GetAuthorByIdAsync(authorId);
+            if (authorToDelete is null)
+                return false;
+
+            _dbContext.Authors.Remove(authorToDelete);
+            int deleted = await _dbContext.SaveChangesAsync();
+
+            return deleted > 0;
         }
     }
 }

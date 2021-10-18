@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Models;
 using Web.Repositories.Interfaces;
 
 namespace Web.Controllers.V1
@@ -37,7 +38,19 @@ namespace Web.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorRequest request)
         {
-            return Ok();
+            var author = new Author
+            {
+                Forename = request.Forename,
+                Surname = request.Surname,
+                PenName = request.PenName,
+                Biography = request.Biography
+            };
+
+            bool success = await _authorRepository.CreateAuthorAsync(author);
+
+            if (!success)
+                return BadRequest();
+            return Ok(author);
         }
 
         // PUT api/v1/authors/{authorId}
