@@ -13,7 +13,7 @@ namespace Web.Models
         public int CopiesSold { get; set; }
         public int YearPublished { get; set; }
 
-        public Guid PublisherId { get; set; }
+        public Guid? PublisherId { get; set; }
         public Publisher Publisher { get; set; }
 
         public string GenreName { get; set; }
