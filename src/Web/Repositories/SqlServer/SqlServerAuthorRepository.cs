@@ -56,8 +56,6 @@ namespace Web.Repositories.SqlServer
             var authorToDelete = await GetAuthorByIdAsync(authorId);
             if (authorToDelete is null)
                 return false;
-            return authorToDelete ?
-
 
             _dbContext.Authors.Remove(authorToDelete);
             int deleted = await _dbContext.SaveChangesAsync();
