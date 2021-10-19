@@ -38,7 +38,12 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return the created wishlist
              */
-            throw new NotImplementedException();
+            await _dbContext.WishLists.Where(userId).Count();
+
+            await _dbContext.WishLists.AddAsync();
+            int changed = await _dbContext.SaveChangesAsync();
+            return changed > 0; 
+
         }
 
         public Task<bool> DeleteWishListAsync(string wishListName)
@@ -50,7 +55,14 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly, return true if any record was modified, else false
              */
-            throw new NotImplementedException();
+            var wishListToDelete = await GetWishListByNameAsync(wishListName);
+            if (wishListToDelete is null)
+                return false;
+
+            _dbContext.WishLists.Remove(WishListToDelete);
+            int deleted = await _dbContext.SaveChangesAsync();
+
+            return deleted > 0;
         }
 
         public Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId) => throw new NotImplementedException();
