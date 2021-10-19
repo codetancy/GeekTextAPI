@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models;
@@ -17,7 +18,6 @@ namespace Web.Controllers.V1
             _bookRepository = bookRepository;
         }
 
-        // GET api/v1/books?genreName=Action
         [HttpGet]
         public async Task<IActionResult> GetAllBooks([FromQuery] string genreName)
         {
@@ -31,16 +31,11 @@ namespace Web.Controllers.V1
             return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
         }
 
-        // GET api/v1/books/2
-        [HttpGet("{bookId:int}")]
-        public async Task<IActionResult> GetBookById([FromRoute] int bookId)
+        [HttpGet("{bookId:guid}")]
+        public async Task<IActionResult> GetBookById([FromRoute] Guid bookId)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-
-            if (book is null)
-                return BadRequest();
-
-            return Ok(book);
+            return book is null ? NotFound() : Ok(book);
         }
     }
 }

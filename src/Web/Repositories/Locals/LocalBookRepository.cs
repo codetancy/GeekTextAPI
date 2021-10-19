@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
@@ -16,27 +17,25 @@ namespace Web.Repositories.Locals
             {
                 new Book
                 {
-                    Id = 1,
+                    Id = Guid.Parse("6c49814a-c3ce-4947-8fa4-993f37bc31d1"),
+                    Title = "The Hunger Games",
                     Isbn = "ABC-123",
-                    Authors = new(),
-                    Price = 1.2m,
-                    Genre = new Genre(1, "Action"),
+                    UnitPrice = 1.2m,
+                    Genre = new Genre { Name = "Dystopic" },
                     Synopsis = "First Book",
-                    Copies = 5000,
-                    Yearpublished = 2011,
-                    Publisher = "FIU Publisher"
+                    CopiesSold = 5000,
+                    YearPublished = 2011,
                 },
                 new Book
                 {
-                    Id = 2,
+                    Id = Guid.Parse("6c4fe33d-2f6c-4768-bace-32fe5127e0a4"),
+                    Title = "Harry Potter: The Prisoner of Azkaban",
                     Isbn = "DEF-456",
-                    Authors = new(),
-                    Price = 4.2m,
-                    Genre = new Genre(2, "Romance"),
+                    UnitPrice = 4.2m,
+                    Genre = new Genre { Name = "Magic" },
                     Synopsis = "Second Book",
-                    Copies = 8000,
-                    Yearpublished = 2005,
-                    Publisher = "Jackie Publishing"
+                    CopiesSold = 8000,
+                    YearPublished = 2005,
                 }
             };
         }
@@ -46,11 +45,19 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(_books);
         }
 
-        public async Task<Book> GetBookByIdAsync(int bookId)
+        public async Task<Book> GetBookByIdAsync(Guid bookId)
         {
-            var book = _books.SingleOrDefault(book => book.Id == bookId);
+            var book = _books.SingleOrDefault(b => b.Id == bookId);
             return await Task.FromResult(book);
         }
+
+        public Task<Book> GetBookByIsbnAsync(string bookIsbn) => throw new NotImplementedException();
+
+        public Task<bool> CreateBookAsync(Book book) => throw new NotImplementedException();
+
+        public Task<bool> UpdateBookAsync(Book book) => throw new NotImplementedException();
+
+        public Task<bool> DeleteBookAsync(Guid bookId) => throw new NotImplementedException();
 
         public async Task<List<Book>> GetBooksByGenreAsync(string genreName) {
             var books = _books.Where(b => b.Genre.Name == genreName).ToList();

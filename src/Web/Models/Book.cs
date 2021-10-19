@@ -1,25 +1,24 @@
+using System;
 using System.Collections.Generic;
 
 namespace Web.Models
 {
     public class Book
     {
-        public int Id { get; set; }
-
+        public Guid Id { get; set; }
+        public string Title { get; set; }
         public string Isbn { get; set; }
-
         public string Synopsis { get; set; }
+        public decimal UnitPrice { get; set; }
+        public int CopiesSold { get; set; }
+        public int YearPublished { get; set; }
 
-        public decimal Price { get; set; }
+        public Guid PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
 
+        public string GenreName { get; set; }
         public Genre Genre { get; set; }
-        
-        public int Copies{ get; set; }
 
-        public string Publisher { get; set; }
-
-        public int Yearpublished { get; set; }
-        
-        public List<Author> Authors { get; set; }
+        public ICollection<Author> Authors { get; set; }
     }
 }

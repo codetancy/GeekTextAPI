@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +15,7 @@ using Web.Data.Identities;
 using Web.Options;
 using Web.Repositories.Interfaces;
 using Web.Repositories.Locals;
+using Web.Repositories.SqlServer;
 using Web.Services;
 using Web.Services.Interfaces;
 
@@ -38,8 +40,10 @@ namespace Web
             services.AddSingleton(jwtOptions);
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
-            services.AddSingleton<IBookRepository, LocalBookRepository>();
-            services.AddSingleton<IAuthorRepository, LocalAuthorRepository>();
+            services.AddScoped<IBookRepository, SqlServerBookRepository>();
+            services.AddScoped<IAuthorRepository, SqlServerAuthorRepository>();
+            services.AddScoped<IWishListRepository, SqlServerWishListRepository>();
+            services.AddScoped<ICartRepository, SqlServerCartRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
@@ -101,7 +105,7 @@ namespace Web
                 c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { securityScheme, System.Array.Empty<string>() }
+                    { securityScheme, Array.Empty<string>() }
                 });
             });
         }

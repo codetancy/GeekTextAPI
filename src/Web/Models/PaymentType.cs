@@ -1,6 +1,6 @@
-﻿namespace Web.Models
+namespace Web.Models
 {
-    public class Genre
+    public class PaymentType
     {
         public string Name { get; set; }
     }
