@@ -13,6 +13,7 @@ namespace Web.Repositories.SqlServer
     {
         private readonly AppDbContext _dbContext;
         private readonly IBookRepository _bookRepository;
+        private readonly List<Cart> _cart;
 
         public SqlServerCartRepository(AppDbContext dbContext, IBookRepository bookRepository)
         {
@@ -36,7 +37,7 @@ namespace Web.Repositories.SqlServer
             return added > 0;
         }
 
-        public Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId, int quantity = 1)
+        public async Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId, int quantity = 1)
         {
             /*
              * TODO: Christian - Implement adding a book to a cart
@@ -51,10 +52,31 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return the created wishlist
              */
-            throw new NotImplementedException();
+
+            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
+            if(cart == null){
+                return null;
+            }
+
+            var book = await _bookRepository.GetBookByIdAsync(bookId);
+            if(book == null){
+                return null;
+            }
+
+            bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
+            if(cartContainsBook){
+                var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
+                cartBook.Quantity += quantity;
+            }
+            else{
+                cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
+            }
+
+            return await Task.FromResult(cart.CartBooks.ToList());
+
         }
 
-        public Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId)
+        public async Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId)
         {
             /*
              * TODO: Christian - Implement removing a book from a cart
@@ -65,6 +87,29 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return the created wishlist
              */
+
+            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
+            if(cart == null){
+                return null;
+            }
+
+            var book = await _bookRepository.GetBookByIdAsync(bookId);
+            if(book == null){
+                return null;
+            }
+
+            bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
+            if(cartContainsBook){
+                var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
+                //How to remove cartBook? lol
+                //cartBook;
+            }
+            else{
+                cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
+            }
+
+            return await Task.FromResult(cart.CartBooks.ToList());
+
             throw new NotImplementedException();
         }
     }
