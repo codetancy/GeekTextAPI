@@ -19,9 +19,17 @@ namespace Web.Data.Configuration
                 .HasForeignKey(userRole => userRole.UserId)
                 .IsRequired();
 
-            builder.HasOne(user => user.Profile)
+            builder.HasMany(user => user.Payments)
                 .WithOne()
-                .HasForeignKey<UserProfile>(profile => profile.UserId);
+                .HasForeignKey(payment => payment.UserId);
+
+            builder.HasMany(user => user.WishLists)
+                .WithOne()
+                .HasForeignKey(wishlist => wishlist.UserId);
+
+            builder.HasMany(user => user.Carts)
+                .WithOne()
+                .HasForeignKey(cart => cart.UserId);
         }
     }
 }

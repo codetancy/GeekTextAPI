@@ -26,7 +26,6 @@ namespace Web.Data
         public DbSet<CartBook> CartBooks { get; set; }
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<WishListBook> WishListBooks { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Card> Cards { get; set; }
