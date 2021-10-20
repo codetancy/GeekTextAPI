@@ -33,16 +33,16 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.Books.SingleOrDefaultAsync(book => book.Id == bookId);
         }
 
-        public Task<Book> GetBookByIsbnAsync(string bookIsbn)
+        public async Task<Book> GetBookByIsbnAsync(string bookIsbn)
         {
             /*
              * TODO: Mohamed - Implement getting a book by Isbn
              * Same implementation as GetBookByIdAsync, but in this case compare by Isbn
              */
-            throw new NotImplementedException();
+            return await _dbContext.Books.SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
-        public Task<bool> CreateBookAsync(Book book)
+        public async Task<bool> CreateBookAsync(Book book)
         {
             /*
              * TODO: Mohamed - Implement adding a book
@@ -50,12 +50,14 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return true if any record was modified, else false
              */
-            throw new NotImplementedException();
+            await _dbContext.Books.AddAsync(book);
+            int changed = await _dbContext.SaveChangesAsync();
+            return changed > 0;
         }
 
         public Task<bool> UpdateBookAsync(Book book) => throw new NotImplementedException();
 
-        public Task<bool> DeleteBookAsync(Guid bookId)
+        public async Task<bool> DeleteBookAsync(Guid bookId)
         {
             /*
              * TODO: Mohamed - Implement deleting a book
@@ -64,7 +66,15 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly, return true if any record was modified, else false
              */
-            throw new NotImplementedException();
+            var booktoDelete = await GetBookByIdAsync(bookId);
+
+            if (booktoDelete == null)
+                return false;
+
+            _dbContext.Books.Remove(booktoDelete);
+            int deleted = await _dbContext.SaveChangesAsync();
+
+            return deleted > 0;
         }
     }
 }

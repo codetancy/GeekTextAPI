@@ -45,14 +45,27 @@ namespace Web.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookRequest request)
         {
-            return Ok();
+            var book = new Book
+            {
+                Title = request.Title,
+                Isbn = request.Isbn,
+                Synopsis = request.Synopsis,
+                UnitPrice = request.UnitPrice,
+                YearPublished = request.YearPublished,
+                Genre = new Genre {Name = request.GenreName}
+            };
+
+            bool success = await _bookRepository.CreateBookAsync(book);
+
+            return success ? Ok(book) : BadRequest();
         }
 
         // DELETE api/v1/books/{bookId}
         [HttpDelete("{bookId:guid}")]
         public async Task<IActionResult> RemoveBook([FromRoute] Guid bookId)
         {
-            return Ok();
+            bool deleted = await _bookRepository.DeleteBookAsync(bookId);
+            return deleted ? NoContent() : BadRequest();
         }
 
         // PUT api/v1/books/{bookId}
