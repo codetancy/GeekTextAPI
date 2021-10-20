@@ -9,6 +9,6 @@ namespace Web.Models
         public Guid UserId { get; set; }
         public double Subtotal { get; set; }
 
-        public ICollection<CartBook> CartBooks { get; set; }
+        public ICollection<CartBook> CartBooks { get; set; } = new List<CartBook>();
     }
 }

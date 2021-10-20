@@ -13,7 +13,6 @@ namespace Web.Repositories.SqlServer
     {
         private readonly AppDbContext _dbContext;
         private readonly IBookRepository _bookRepository;
-        private readonly List<Cart> _cart;
 
         public SqlServerCartRepository(AppDbContext dbContext, IBookRepository bookRepository)
         {
@@ -23,13 +22,13 @@ namespace Web.Repositories.SqlServer
 
         public async Task<Cart> GetCartByUserIdAsync(Guid userId)
         {
-            return await _dbContext.Carts.SingleOrDefaultAsync(c => c.UserId == userId);
+            return await _dbContext.Carts.Include(c => c.CartBooks).SingleOrDefaultAsync(c => c.UserId == userId);
         }
 
         public async Task<bool> CreateCartForUserAsync(Guid userId, Cart cart)
         {
             int userCarts = await _dbContext.Carts.Where(c => c.UserId == userId).CountAsync();
-            if (userCarts > 1)
+            if (userCarts >= 1)
                 return false;
 
             await _dbContext.Carts.AddAsync(cart);
@@ -53,27 +52,25 @@ namespace Web.Repositories.SqlServer
              * Lastly return the created wishlist
              */
 
-            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
-            if(cart == null){
-                return null;
-            }
+            var cart = _dbContext.Carts.Include(c => c.CartBooks).SingleOrDefault(c => cartId == c.CartId);
+            if (cart == null) return null;
 
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null){
-                return null;
-            }
+            if (book == null) return null;
 
             bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
-            if(cartContainsBook){
+            if (cartContainsBook) {
                 var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
                 cartBook.Quantity += quantity;
             }
-            else{
-                cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
+            else {
+                cart.CartBooks.Add(new CartBook { CartId = cartId, BookId = bookId });
             }
 
-            return await Task.FromResult(cart.CartBooks.ToList());
+            _dbContext.Carts.Update(cart);
+            int changed = await _dbContext.SaveChangesAsync();
 
+            return changed > 0 ? cart.CartBooks.ToList() : null;
         }
 
         public async Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId)
@@ -88,29 +85,22 @@ namespace Web.Repositories.SqlServer
              * Lastly return the created wishlist
              */
 
-            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
-            if(cart == null){
-                return null;
-            }
+            var cart = _dbContext.Carts.Include(c => c.CartBooks).SingleOrDefault(c => cartId == c.CartId);
+            if (cart == null) return null;
 
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null){
-                return null;
-            }
+            if (book == null) return null;
 
             bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
-            if(cartContainsBook){
-                var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
-                //How to remove cartBook? lol
-                //cartBook;
-            }
-            else{
-                cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
-            }
+            if (!cartContainsBook) return null;
 
-            return await Task.FromResult(cart.CartBooks.ToList());
+            var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
+            cart.CartBooks.Remove(cartBook);
 
-            throw new NotImplementedException();
+            _dbContext.Carts.Update(cart);
+            int changed = await _dbContext.SaveChangesAsync();
+
+            return changed > 0 ? cart.CartBooks.ToList() : null;
         }
     }
 }
