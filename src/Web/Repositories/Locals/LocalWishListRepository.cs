@@ -45,6 +45,8 @@ namespace Web.Repositories.Locals
             };
         }
 
+        public Task<bool> UserOwnsWishList(string wishListName, Guid userId) => throw new NotImplementedException();
+
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
         {
             return await Task.FromResult(_wishList);
