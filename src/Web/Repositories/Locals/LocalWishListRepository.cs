@@ -56,7 +56,7 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(wishList);
         }
 
-        public Task<WishList> CreateWishListAsync(string wishListName, Guid userId) => throw new NotImplementedException();
+        public Task<bool> CreateWishListAsync(WishList wishList) => throw new NotImplementedException();
 
         public Task<bool> DeleteWishListAsync(string wishListName) => throw new NotImplementedException();
 

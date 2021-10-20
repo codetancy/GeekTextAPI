@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Extensions;
+using Web.Models;
 using Web.Repositories.Interfaces;
 
 namespace Web.Controllers.V1
@@ -48,13 +49,16 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
             var userId = HttpContext.GetUserId();
+            var wishlist = new WishList
+            {
+                Name = request.WishListName, Description = request.Description, UserId = userId
+            };
 
-            var wishList = await _wishListRepository.CreateWishListAsync(request.WishListName, userId);
+            bool success = await _wishListRepository.CreateWishListAsync(wishlist);
 
-            if (wishList == null)
-                return BadRequest();
-
-            return Ok(wishList);
+            return success
+                ? CreatedAtAction(nameof(GetWishListByName), new { wishListName = wishlist.Name}, wishlist)
+                : BadRequest();
         }
 
         // DELETE api/v1/wishlists/{wishlistName}

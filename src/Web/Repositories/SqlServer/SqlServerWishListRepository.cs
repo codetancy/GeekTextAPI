@@ -28,7 +28,7 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.WishLists.SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
         }
 
-        public async Task<WishList> CreateWishListAsync(string wishListName, Guid userId)
+        public async Task<bool> CreateWishListAsync(WishList wishList)
         {
             /*
              * TODO: Ricardo - Implement adding an wishlist for a user
@@ -38,12 +38,13 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return the created wishlist
              */
-            var newWishList = new WishList { UserId = userId, Name = wishListName };
-            await _dbContext.WishLists.AddAsync(newWishList);
+            int count = await _dbContext.WishLists.Where(w => w.UserId == wishList.UserId).CountAsync();
+            if (count >= 3) return false;
+
+            await _dbContext.WishLists.AddAsync(wishList);
             int changed = await _dbContext.SaveChangesAsync();
 
-            return changed > 0 ? newWishList : null;
-
+            return changed > 0;
         }
 
         public async Task<bool> DeleteWishListAsync(string wishListName)
