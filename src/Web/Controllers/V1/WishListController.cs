@@ -1,7 +1,4 @@
 ﻿using System;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +26,8 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetUserWishLists()
         {
             var userId = HttpContext.GetUserId();
-            if (userId == Guid.Empty)
-                return BadRequest();
+            if (userId == Guid.Empty) return BadRequest();
+
             var wishList = await _wishListRepository.GetUserWishListsAsync(userId);
             return Ok(wishList);
         }
@@ -41,7 +38,9 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetWishListByName([FromRoute] string wishListName)
         {
             var wishList = await _wishListRepository.GetWishListByNameAsync(wishListName);
-            return wishList is null ? NotFound() : Ok(wishList);
+            if (wishList is null) return NotFound(new {Error = $"Wishlist {wishListName} does not exist."});
+
+            return Ok(wishList);
         }
 
         // POST api/v1/wishlists
@@ -49,24 +48,37 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
             var userId = HttpContext.GetUserId();
-            var wishlist = new WishList
-            {
-                Name = request.WishListName, Description = request.Description, UserId = userId
-            };
+            (string wishListName, string description, _) = request;
 
+            bool exists = await _wishListRepository.WishListExists(wishListName);
+            if (exists) return BadRequest(new {Error = $"Wishlist {wishListName} already exists."});
+
+            bool exceeds = await _wishListRepository.UserExceedsWishListsLimit(userId);
+            if (exceeds) return BadRequest(new { Error = "You reached the maximum number of wishlists." });
+
+            var wishlist = new WishList { Name = wishListName, Description = description, UserId = userId };
             bool success = await _wishListRepository.CreateWishListAsync(wishlist);
+            if (!success) return BadRequest(new { Error = "Unable to create the wishlist."});
 
-            return success
-                ? CreatedAtAction(nameof(GetWishListByName), new { wishListName = wishlist.Name}, wishlist)
-                : BadRequest();
+            return CreatedAtAction(nameof(GetWishListByName), new {wishListName = wishlist.Name}, wishlist);
         }
 
         // DELETE api/v1/wishlists/{wishlistName}
         [HttpDelete("{wishListName}")]
         public async Task<IActionResult> DeleteWishList([FromRoute] string wishListName)
         {
+            var userId = HttpContext.GetUserId();
+
+            bool exists = await _wishListRepository.WishListExists(wishListName);
+            if (!exists) return NotFound(new {Error = $"Wishlist {wishListName} does not exist."});
+
+            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!isOwner) return BadRequest(new { Error = "You do not own this wishlist."});
+
             bool deleted = await _wishListRepository.DeleteWishListAsync(wishListName);
-            return deleted ? NoContent() : BadRequest();
+            if (!deleted) return BadRequest(new {Error = "Unable to delete the wishlist."});
+
+            return NoContent();
         }
 
         // POST api/v1/wishlists/{wishListName}/books
