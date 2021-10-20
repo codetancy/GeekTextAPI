@@ -38,7 +38,8 @@ namespace Web.Data.Configuration
 
             builder.HasOne(book => book.Genre)
                 .WithMany()
-                .HasForeignKey(book => book.GenreName);
+                .HasForeignKey(book => book.GenreName)
+                .IsRequired(false);
 
             builder.HasMany(book => book.Authors)
                 .WithMany(author => author.Books)
