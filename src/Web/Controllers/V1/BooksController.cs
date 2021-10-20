@@ -23,14 +23,16 @@ namespace Web.Controllers.V1
         [HttpGet]
         public async Task<IActionResult> GetAllBooks([FromQuery] string genreName)
         {
-            List<Book> books;
-
             if (string.IsNullOrEmpty(genreName))
-                books = await _bookRepository.GetBooksAsync();
+            {
+                var books = await _bookRepository.GetBooksAsync();
+                return Ok(books);
+            }
             else
-                books = await _bookRepository.GetBooksByGenreAsync(genreName);
-
-            return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
+            {
+                var books = await _bookRepository.GetBooksByGenreAsync(genreName);
+                return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
+            }
         }
 
         // GET ap1/v1/books/{bookId}
@@ -51,8 +53,7 @@ namespace Web.Controllers.V1
                 Isbn = request.Isbn,
                 Synopsis = request.Synopsis,
                 UnitPrice = request.UnitPrice,
-                YearPublished = request.YearPublished,
-                Genre = new Genre {Name = request.GenreName}
+                YearPublished = request.YearPublished
             };
 
             bool success = await _bookRepository.CreateBookAsync(book);
