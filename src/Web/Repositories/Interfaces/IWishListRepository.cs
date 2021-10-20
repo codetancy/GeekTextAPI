@@ -9,6 +9,7 @@ namespace Web.Repositories.Interfaces
     {
         Task<bool> WishListExists(string wishListName);
         Task<bool> UserOwnsWishList(string wishListName, Guid userId);
+        Task<bool> UserExceedsWishListsLimit(Guid userId);
         Task<List<WishList>> GetUserWishListsAsync(Guid userId);
         Task<WishList> GetWishListByNameAsync(string wishListName);
         Task<bool> CreateWishListAsync(WishList wishList);

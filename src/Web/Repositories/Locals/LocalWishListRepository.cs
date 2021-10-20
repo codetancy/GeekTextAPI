@@ -48,6 +48,7 @@ namespace Web.Repositories.Locals
         public Task<bool> WishListExists(string wishListName) => throw new NotImplementedException();
 
         public Task<bool> UserOwnsWishList(string wishListName, Guid userId) => throw new NotImplementedException();
+        public Task<bool> UserExceedsWishListsLimit(Guid userId) => throw new NotImplementedException();
 
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
         {

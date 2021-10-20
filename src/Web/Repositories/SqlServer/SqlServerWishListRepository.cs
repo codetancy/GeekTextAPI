@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Web.Constants;
 using Web.Data;
 using Web.Models;
 using Web.Repositories.Interfaces;
@@ -30,6 +31,12 @@ namespace Web.Repositories.SqlServer
             if (wishList is null) return false;
 
             return wishList.UserId == userId;
+        }
+
+        public async Task<bool> UserExceedsWishListsLimit(Guid userId)
+        {
+            int count = await _dbContext.WishLists.AsNoTracking().Where(w => w.UserId == userId).CountAsync();
+            return count >= WishListConstants.MaxWishListsPerUser;
         }
 
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
