@@ -28,7 +28,7 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.WishLists.SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
         }
 
-        public Task<WishList> CreateWishListAsync(string wishListName, Guid userId)
+        public async Task<WishList> CreateWishListAsync(string wishListName, Guid userId)
         {
             /*
              * TODO: Ricardo - Implement adding an wishlist for a user
@@ -38,15 +38,15 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return the created wishlist
              */
-            await _dbContext.WishLists.Where(userId).Count();
-
-            await _dbContext.WishLists.AddAsync();
+            var newWishList = new WishList { UserId = userId, Name = wishListName };
+            await _dbContext.WishLists.AddAsync(newWishList);
             int changed = await _dbContext.SaveChangesAsync();
-            return changed > 0; 
+
+            return changed > 0 ? newWishList : null;
 
         }
 
-        public Task<bool> DeleteWishListAsync(string wishListName)
+        public async Task<bool> DeleteWishListAsync(string wishListName)
         {
             /*
              * TODO: Ricardo - Implement deleting a wishlist
@@ -55,11 +55,8 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly, return true if any record was modified, else false
              */
-            var wishListToDelete = await GetWishListByNameAsync(wishListName);
-            if (wishListToDelete is null)
-                return false;
-
-            _dbContext.WishLists.Remove(WishListToDelete);
+            var wishlistToDelete = await _dbContext.WishLists.SingleOrDefaultAsync(w => w.Name == wishListName);
+            _dbContext.WishLists.Remove(wishlistToDelete);
             int deleted = await _dbContext.SaveChangesAsync();
 
             return deleted > 0;

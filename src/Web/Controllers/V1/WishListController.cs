@@ -47,14 +47,22 @@ namespace Web.Controllers.V1
         [HttpPost]
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
-            return Ok();
+            var userId = HttpContext.GetUserId();
+
+            var wishList = await _wishListRepository.CreateWishListAsync(request.WishListName, userId);
+
+            if (wishList == null)
+                return BadRequest();
+
+            return Ok(wishList);
         }
 
         // DELETE api/v1/wishlists/{wishlistName}
         [HttpDelete("{wishListName}")]
         public async Task<IActionResult> DeleteWishList([FromRoute] string wishListName)
         {
-            return Ok();
+            bool deleted = await _wishListRepository.DeleteWishListAsync(wishListName);
+            return deleted ? NoContent() : BadRequest();
         }
 
         // POST api/v1/wishlists/{wishListName}/books
