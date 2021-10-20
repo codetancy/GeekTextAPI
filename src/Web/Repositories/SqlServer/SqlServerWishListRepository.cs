@@ -18,6 +18,12 @@ namespace Web.Repositories.SqlServer
             _dbContext = dbContext;
         }
 
+        public async Task<bool> WishListExists(string wishListName)
+        {
+            var wishList = await _dbContext.WishLists.AsNoTracking().SingleOrDefaultAsync(w => w.Name == wishListName);
+            return wishList is not null;
+        }
+
         public async Task<bool> UserOwnsWishList(string wishListName, Guid userId)
         {
             var wishList = await _dbContext.WishLists.AsNoTracking().SingleOrDefaultAsync(w => w.Name == wishListName);
