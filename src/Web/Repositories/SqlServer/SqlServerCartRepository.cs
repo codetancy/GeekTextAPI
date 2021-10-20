@@ -13,7 +13,6 @@ namespace Web.Repositories.SqlServer
     {
         private readonly AppDbContext _dbContext;
         private readonly IBookRepository _bookRepository;
-        private readonly List<Cart> _cart;
 
         public SqlServerCartRepository(AppDbContext dbContext, IBookRepository bookRepository)
         {
@@ -53,27 +52,25 @@ namespace Web.Repositories.SqlServer
              * Lastly return the created wishlist
              */
 
-            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
-            if(cart == null){
-                return null;
-            }
+            var cart = _dbContext.Carts.SingleOrDefault(c => cartId == c.CartId);
+            if (cart == null) return null;
 
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null){
-                return null;
-            }
+            if (book == null) return null;
 
             bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
-            if(cartContainsBook){
+            if (cartContainsBook) {
                 var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
                 cartBook.Quantity += quantity;
             }
-            else{
+            else {
                 cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
             }
 
-            return await Task.FromResult(cart.CartBooks.ToList());
+            _dbContext.Carts.Update(cart);
+            int changed = await _dbContext.SaveChangesAsync();
 
+            return changed > 0 ? cart.CartBooks.ToList() : null;
         }
 
         public async Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId)
@@ -88,29 +85,22 @@ namespace Web.Repositories.SqlServer
              * Lastly return the created wishlist
              */
 
-            var cart = _cart.SingleOrDefault(c => cartId == c.CartId);
-            if(cart == null){
-                return null;
-            }
+            var cart = _dbContext.Carts.SingleOrDefault(c => cartId == c.CartId);
+            if (cart == null) return null;
 
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null){
-                return null;
-            }
+            if (book == null) return null;
 
             bool cartContainsBook = cart.CartBooks.Any(b => b.Book.Id == bookId);
-            if(cartContainsBook){
-                var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
-                //How to remove cartBook? lol
-                //cartBook;
-            }
-            else{
-                cart.CartBooks.Add(new CartBook { Book = new Book { Id = bookId } });
-            }
+            if (!cartContainsBook) return null;
 
-            return await Task.FromResult(cart.CartBooks.ToList());
+            var cartBook = cart.CartBooks.Single(cb => cb.Book.Id == bookId);
+            cart.CartBooks.Remove(cartBook);
 
-            throw new NotImplementedException();
+            _dbContext.Carts.Update(cart);
+            int changed = await _dbContext.SaveChangesAsync();
+
+            return changed > 0 ? cart.CartBooks.ToList() : null;
         }
     }
 }

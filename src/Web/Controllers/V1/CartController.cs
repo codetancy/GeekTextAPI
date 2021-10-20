@@ -58,7 +58,11 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> RemoveBookFromCart(
             [FromRoute] Guid bookId, [FromBody] RemoveBookFromCartRequest request)
         {
-            return Ok();
+            var books = await _cartRepository.RemoveBookFromCart(request.CartId, bookId);
+
+            return books == null
+                ? BadRequest()
+                : Ok(books);
         }
     }
 }
