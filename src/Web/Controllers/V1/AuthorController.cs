@@ -31,7 +31,8 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetAuthorById([FromRoute] Guid authorId)
         {
             var author = await _authorRepository.GetAuthorByIdAsync(authorId);
-            return author is null ? NotFound() : Ok(author);
+            return author is null ?
+                NotFound() : Ok(author);
         }
 
         // POST api/v1/authors
@@ -48,8 +49,9 @@ namespace Web.Controllers.V1
 
             bool success = await _authorRepository.CreateAuthorAsync(author);
 
-            if (!success)
-                return BadRequest();
+            return success ?
+                Ok(author) : BadRequest();
+
             return Ok(author);
         }
 
@@ -64,7 +66,9 @@ namespace Web.Controllers.V1
         [HttpDelete("{authorId:guid}")]
         public async Task<IActionResult> RemoveAuthor([FromRoute] Guid authorId)
         {
-            return Ok();
+            bool deleted = await _authorRepository.DeleteAuthorAsync(authorId);
+
+            return deleted ? NoContent() : BadRequest($"Unable to delte author with Id: {authorId}");
         }
 
     }
