@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Contracts.V1.Responses;
 using Web.Models;
 using Web.Repositories.Interfaces;
 
@@ -13,11 +13,13 @@ namespace Web.Controllers.V1
     [Route("api/v1/books")]
     public class BooksController : ControllerBase
     {
+        private readonly IAuthorRepository _authorRepository;
         private readonly IBookRepository _bookRepository;
 
-        public BooksController(IBookRepository bookRepository)
+        public BooksController(IBookRepository bookRepository, IAuthorRepository authorRepository)
         {
             _bookRepository = bookRepository;
+            _authorRepository = authorRepository;
         }
 
         // GET api/v1/books?genreName
@@ -43,7 +45,18 @@ namespace Web.Controllers.V1
         {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
             if (book is null) return NotFound(new { Error = $"Book {bookId} does not exist" });
-            return Ok(book);
+
+            var response = new BookResponse(
+                Id: book.Id,
+                Title: book.Title,
+                Isbn: book.Isbn,
+                Price: book.UnitPrice,
+                Genre: book.GenreName,
+                Publisher: book.Publisher?.Name,
+                Authors: book.Authors.Select(a => new SimpleAuthorResponse(a.Id, a.PenName)).ToList()
+            );
+
+            return Ok(response);
         }
 
         // POST api/v1/books
@@ -56,6 +69,15 @@ namespace Web.Controllers.V1
                 if (exists) return BadRequest(new { Error = $"Book with Isbn {request.Isbn} already exists." });
             }
 
+            if (request.AuthorsIds?.Any() ?? false)
+            {
+                bool duplicates = request.AuthorsIds.Count != request.AuthorsIds.Distinct().Count();
+                if (duplicates) return BadRequest("List of authors cannot contain duplicates.");
+
+                bool valid = await _authorRepository.AuthorsExistAsync(request.AuthorsIds);
+                if (!valid) return BadRequest("At least one of the authors provided do not exist");
+            }
+
             var newBook = new Book
             {
                 Title = request.Title,
@@ -66,7 +88,7 @@ namespace Web.Controllers.V1
                 PublisherId = request.PublisherId == Guid.Empty ? null : request.PublisherId
             };
 
-            bool success = await _bookRepository.CreateBookAsync(newBook);
+            bool success = await _bookRepository.CreateBookAsync(newBook, request.AuthorsIds);
             if (!success) return BadRequest(new { Error = "Unable to create book." });
 
             return CreatedAtAction(nameof(GetBookById), new { bookId = newBook.Id }, newBook);
