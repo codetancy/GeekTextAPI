@@ -28,6 +28,9 @@ namespace Web.Data.Configuration
                 .HasMaxLength(256);
 
             // Relationships
+            builder.HasMany(author => author.BookAuthors)
+                .WithOne(bookAuthor => bookAuthor.Author)
+                .HasForeignKey(bookAuthor => bookAuthor.AuthorId);
         }
     }
 }

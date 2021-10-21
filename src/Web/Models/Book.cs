@@ -19,6 +19,7 @@ namespace Web.Models
         public string GenreName { get; set; }
         public Genre Genre { get; set; }
 
-        public ICollection<Author> Authors { get; set; }
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+        public ICollection<Author> Authors { get; set; } = new List<Author>();
     }
 }

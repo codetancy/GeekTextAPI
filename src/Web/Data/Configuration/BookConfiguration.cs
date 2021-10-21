@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Web.Models;
@@ -41,12 +40,17 @@ namespace Web.Data.Configuration
                 .HasForeignKey(book => book.GenreName)
                 .IsRequired(false);
 
+            builder.HasMany(book => book.BookAuthors)
+                .WithOne(bookAuthor => bookAuthor.Book)
+                .HasForeignKey(bookAuthor => bookAuthor.BookId);
+
             builder.HasMany(book => book.Authors)
                 .WithMany(author => author.Books)
-                .UsingEntity<Dictionary<string, object>>(
-                    "BookAuthor",
-                    j => j.HasOne<Author>().WithMany().OnDelete(DeleteBehavior.ClientCascade),
-                    j => j.HasOne<Book>().WithMany().OnDelete(DeleteBehavior.ClientCascade));
+                .UsingEntity<BookAuthor>(
+                    j => j.HasOne(ba => ba.Author).WithMany(a => a.BookAuthors)
+                        .OnDelete(DeleteBehavior.ClientCascade),
+                    j => j.HasOne(ba => ba.Book).WithMany(b => b.BookAuthors)
+                        .OnDelete(DeleteBehavior.ClientCascade));
         }
     }
 }
