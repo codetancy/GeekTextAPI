@@ -7,6 +7,8 @@ namespace Web.Repositories.Interfaces
 {
     public interface IBookRepository
     {
+        Task<bool> BookExistsAsync(Guid bookId);
+        Task<bool> IsbnExistsAsync(string isbn);
         Task<List<Book>> GetBooksAsync();
         Task<List<Book>> GetBooksByGenreAsync(string genreName);
         Task<Book> GetBookByIdAsync(Guid bookId);

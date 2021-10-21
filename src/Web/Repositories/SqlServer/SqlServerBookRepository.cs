@@ -18,6 +18,16 @@ namespace Web.Repositories.SqlServer
             _dbContext = dbContext;
         }
 
+        public async Task<bool> BookExistsAsync(Guid bookId)
+        {
+            return await _dbContext.Books.AsNoTracking().AnyAsync(b => b.Id == bookId);
+        }
+
+        public async Task<bool> IsbnExistsAsync(string isbn)
+        {
+            return await _dbContext.Books.AsNoTracking().AnyAsync(b => b.Isbn == isbn);
+        }
+
         public async Task<List<Book>> GetBooksAsync()
         {
             return await _dbContext.Books.ToListAsync();
