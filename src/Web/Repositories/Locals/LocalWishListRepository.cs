@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Models;
-using Web.Repositories.Interfaces;
 
 namespace Web.Repositories.Locals
 {
-    public class LocalWishListRepository : IWishListRepository
+    public class LocalWishListRepository
     {
         private readonly List<WishList> _wishList;
 

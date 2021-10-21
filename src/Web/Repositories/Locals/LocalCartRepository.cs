@@ -7,10 +7,11 @@ using Web.Repositories.Interfaces;
 
 namespace Web.Repositories.Locals
 {
-    public class LocalCartRepository : ICartRepository
+    public class LocalCartRepository
     {
-        private readonly List<Cart> _cart;
         private readonly IBookRepository _bookRepository;
+        private readonly List<Cart> _cart;
+
         public LocalCartRepository(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
@@ -23,18 +24,18 @@ namespace Web.Repositories.Locals
                     Subtotal = 99.95,
                     CartBooks = new List<CartBook>
                     {
-                        new CartBook()
+                        new CartBook
                         {
-                            Book = new Book()
+                            Book = new Book
                             {
                                 Id = Guid.Parse("6c49814a-c3ce-4947-8fa4-993f37bc31d1"),
                                 Title = "The Hunger Games"
                             },
                             Quantity = 3
                         },
-                        new CartBook()
+                        new CartBook
                         {
-                            Book = new Book()
+                            Book = new Book
                             {
                                 Id = Guid.Parse("6c4fe33d-2f6c-4768-bace-32fe5127e0a4"),
                                 Title = "Harry Potter: The Prisoner of Azkaban"
@@ -52,7 +53,7 @@ namespace Web.Repositories.Locals
             return await Task.FromResult(cart);
         }
 
-        public Task<bool> CreateCartForUserAsync(Guid userId, Cart cart) => throw new NotImplementedException();
+        public Task<bool> CreateCartAsync(Cart cart) => throw new NotImplementedException();
 
         public async Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId, int quantity)
         {
