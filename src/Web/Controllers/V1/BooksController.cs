@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
@@ -31,7 +32,8 @@ namespace Web.Controllers.V1
             else
             {
                 var books = await _bookRepository.GetBooksByGenreAsync(genreName);
-                return books == null || books.Count == 0 ? NotFound("Given genre does not exist."): Ok(books);
+                if (books?.Any() ?? false) return NotFound(new { Error = "Given genre does not exist." });
+                return Ok(books);
             }
         }
 
@@ -40,40 +42,53 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetBookById([FromRoute] Guid bookId)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
-            return book is null ? NotFound() : Ok(book);
+            if (book is null) return NotFound(new { Error = $"Book {bookId} does not exist" });
+            return Ok(book);
         }
 
         // POST api/v1/books
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookRequest request)
         {
-            var book = new Book
+            if (!string.IsNullOrEmpty(request.Isbn))
+            {
+                bool exists = await _bookRepository.IsbnExistsAsync(request.Isbn);
+                if (exists) return BadRequest(new { Error = $"Book with Isbn {request.Isbn} already exists." });
+            }
+
+            var newBook = new Book
             {
                 Title = request.Title,
                 Isbn = request.Isbn,
                 Synopsis = request.Synopsis,
                 UnitPrice = request.UnitPrice,
-                YearPublished = request.YearPublished
+                YearPublished = request.YearPublished,
+                PublisherId = request.PublisherId == Guid.Empty ? null : request.PublisherId
             };
 
-            bool success = await _bookRepository.CreateBookAsync(book);
+            bool success = await _bookRepository.CreateBookAsync(newBook);
+            if (!success) return BadRequest(new { Error = "Unable to create book." });
 
-            return success ? Ok(book) : BadRequest();
+            return CreatedAtAction(nameof(GetBookById), new { bookId = newBook.Id }, newBook);
         }
 
         // DELETE api/v1/books/{bookId}
         [HttpDelete("{bookId:guid}")]
         public async Task<IActionResult> RemoveBook([FromRoute] Guid bookId)
         {
+            bool exists = await _bookRepository.BookExistsAsync(bookId);
+            if (!exists) return NotFound(new { Error = $"Book {bookId} does not exist." });
+
             bool deleted = await _bookRepository.DeleteBookAsync(bookId);
-            return deleted ? NoContent() : BadRequest();
+            if (!deleted) return BadRequest(new { Error = "Unable to delete book." });
+            return NoContent();
         }
 
         // PUT api/v1/books/{bookId}
         [HttpPut("{bookId:guid}")]
         public async Task<IActionResult> UpdateBook([FromBody] UpdateBookRequest request)
         {
-            return Ok();
+            return await Task.FromResult(Ok());
         }
     }
 }
