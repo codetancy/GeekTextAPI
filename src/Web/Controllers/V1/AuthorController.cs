@@ -31,8 +31,8 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetAuthorById([FromRoute] Guid authorId)
         {
             var author = await _authorRepository.GetAuthorByIdAsync(authorId);
-            return author is null ?
-                NotFound() : Ok(author);
+            if (author is null) return NotFound(new { Error = $"Author {authorId} does not exist" });
+            return Ok(author);
         }
 
         // POST api/v1/authors
@@ -48,10 +48,7 @@ namespace Web.Controllers.V1
             };
 
             bool success = await _authorRepository.CreateAuthorAsync(author);
-
-            return success ?
-                Ok(author) : BadRequest();
-
+            if (!success) return BadRequest(new { Error = "Unable to create author" });
             return Ok(author);
         }
 
@@ -59,7 +56,7 @@ namespace Web.Controllers.V1
         [HttpPut("{authorId:guid}")]
         public async Task<IActionResult> UpdateAuthor([FromRoute] Guid authorId, [FromBody] UpdateAuthorRequest request)
         {
-            return Ok();
+            return await Task.FromResult(Ok());
         }
 
         // DELETE api/v1/authors/{authorId}
@@ -67,9 +64,8 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> RemoveAuthor([FromRoute] Guid authorId)
         {
             bool deleted = await _authorRepository.DeleteAuthorAsync(authorId);
-
-            return deleted ? NoContent() : BadRequest($"Unable to delte author with Id: {authorId}");
+            if (!deleted) return BadRequest(new { Error = "Unable to delete author." });
+            return NoContent();
         }
-
     }
 }
