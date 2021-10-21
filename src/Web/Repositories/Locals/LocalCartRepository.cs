@@ -21,7 +21,7 @@ namespace Web.Repositories.Locals
                 {
                     UserId = Guid.Parse("3304f724-dbfd-45f3-9737-ccd0b28929d6"),
                     CartId = Guid.Parse("3304f724-dbfd-45f3-9737-ccd0b28929d6"),
-                    Subtotal = 99.95,
+                    Subtotal = 99.95m,
                     CartBooks = new List<CartBook>
                     {
                         new CartBook

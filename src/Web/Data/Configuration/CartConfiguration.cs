@@ -13,7 +13,8 @@ namespace Web.Data.Configuration
 
             // Properties
             builder.Property(cart => cart.Subtotal)
-                .HasDefaultValue(0)
+                .HasDefaultValue(0.0m)
+                .HasPrecision(6, 2)
                 .IsRequired();
 
             // Relationships
