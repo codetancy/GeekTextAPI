@@ -7,6 +7,8 @@ namespace Web.Repositories.Interfaces
 {
     public interface IAuthorRepository
     {
+        Task<bool> AuthorExistsAsync(Guid authorId);
+        Task<bool> AuthorsExistAsync(IEnumerable<Guid> authorsIds);
         Task<List<Author>> GetAllAuthorsAsync();
         Task<Author> GetAuthorByIdAsync(Guid authorId);
         Task<bool> CreateAuthorAsync(Author author);

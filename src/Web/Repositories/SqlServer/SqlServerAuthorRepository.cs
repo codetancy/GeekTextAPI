@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Web.Data;
@@ -15,6 +16,22 @@ namespace Web.Repositories.SqlServer
         public SqlServerAuthorRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public async Task<bool> AuthorExistsAsync(Guid authorId)
+        {
+            return await _dbContext.Authors.AsNoTracking().AnyAsync(a => a.Id == authorId);
+        }
+
+        public async Task<bool> AuthorsExistAsync(IEnumerable<Guid> authorsIds)
+        {
+            var matches = await _dbContext.Authors.AsNoTracking()
+                .Where(author => authorsIds.Contains(author.Id))
+                .Select(author => author.Id)
+                .ToListAsync();
+
+            int invalidCount = matches.Except(authorsIds).Count();
+            return invalidCount == 0;
         }
 
         public async Task<List<Author>> GetAllAuthorsAsync()
