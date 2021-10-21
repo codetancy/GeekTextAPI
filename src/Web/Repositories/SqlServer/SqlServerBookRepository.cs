@@ -40,7 +40,8 @@ namespace Web.Repositories.SqlServer
 
         public async Task<Book> GetBookByIdAsync(Guid bookId)
         {
-            return await _dbContext.Books.SingleOrDefaultAsync(book => book.Id == bookId);
+            return await _dbContext.Books.Include(book => book.Authors)
+                .SingleOrDefaultAsync(book => book.Id == bookId);
         }
 
         public async Task<Book> GetBookByIsbnAsync(string bookIsbn)
@@ -52,7 +53,7 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.Books.SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
-        public async Task<bool> CreateBookAsync(Book book)
+        public async Task<bool> CreateBookAsync(Book book, List<Guid> authorsIds = null)
         {
             /*
              * TODO: Mohamed - Implement adding a book
@@ -60,9 +61,29 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly return true if any record was modified, else false
              */
-            await _dbContext.Books.AddAsync(book);
-            int changed = await _dbContext.SaveChangesAsync();
-            return changed > 0;
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await _dbContext.Books.AddAsync(book);
+                await _dbContext.SaveChangesAsync();
+
+                if (authorsIds?.Any() ?? false)
+                {
+                    book.BookAuthors =
+                        authorsIds.Select(authorId => new BookAuthor {BookId = book.Id, AuthorId = authorId}).ToList();
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+
+            return true;
         }
 
         public Task<bool> UpdateBookAsync(Book book) => throw new NotImplementedException();
@@ -76,14 +97,11 @@ namespace Web.Repositories.SqlServer
              * Then, save your changes with _dbContext.SaveChangesAsync()
              * Lastly, return true if any record was modified, else false
              */
-            var booktoDelete = await GetBookByIdAsync(bookId);
+            var bookToDelete = await GetBookByIdAsync(bookId);
+            if (bookToDelete == null) return false;
 
-            if (booktoDelete == null)
-                return false;
-
-            _dbContext.Books.Remove(booktoDelete);
+            _dbContext.Books.Remove(bookToDelete);
             int deleted = await _dbContext.SaveChangesAsync();
-
             return deleted > 0;
         }
     }
