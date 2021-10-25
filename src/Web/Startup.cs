@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,20 @@ namespace Web
 
             services.AddSingleton(swaggerOptions);
             services.AddSingleton(jwtOptions);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUriService>(provider =>
+            {
+                var accessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext!.Request;
+                var sb = new StringBuilder()
+                    .Append(request.Scheme)
+                    .Append("://")
+                    .Append(request.Host.ToUriComponent())
+                    .Append('/')
+                    .Append(request.Path);
+                return new UriService(sb.ToString());
+            });
 
             services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddScoped<IBookRepository, SqlServerBookRepository>();
