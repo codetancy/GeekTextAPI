@@ -9,7 +9,7 @@ namespace Web.Repositories.Interfaces
     {
         Task<bool> AuthorExistsAsync(Guid authorId);
         Task<bool> AuthorsExistAsync(IEnumerable<Guid> authorsIds);
-        Task<List<Author>> GetAllAuthorsAsync();
+        Task<List<Author>> GetAllAuthorsAsync(PaginationFilter filter = null);
         Task<Author> GetAuthorByIdAsync(Guid authorId);
         Task<bool> CreateAuthorAsync(Author author);
         Task<bool> UpdateAuthorAsync(Author author);

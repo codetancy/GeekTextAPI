@@ -34,9 +34,13 @@ namespace Web.Repositories.SqlServer
             return invalidCount == 0;
         }
 
-        public async Task<List<Author>> GetAllAuthorsAsync()
+        public async Task<List<Author>> GetAllAuthorsAsync(PaginationFilter filter = null)
         {
-            return await _dbContext.Authors.Include(author => author.Books).ToListAsync();
+            if (filter is null)
+                return await _dbContext.Authors.Include(author => author.Books).ToListAsync();
+
+            int skipSize = (filter.PageNumber - 1) * filter.PageSize;
+            return await _dbContext.Authors.Skip(skipSize).Take(filter.PageSize).Include(author => author.Books).ToListAsync();
         }
 
         public async Task<Author> GetAuthorByIdAsync(Guid authorId)

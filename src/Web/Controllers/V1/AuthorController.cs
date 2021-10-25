@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Contracts.V1.Requests.Queries;
 using Web.Contracts.V1.Responses;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
+using Web.Services.Interfaces;
 
 namespace Web.Controllers.V1
 {
@@ -17,21 +19,24 @@ namespace Web.Controllers.V1
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly IMapper _mapper;
+        private readonly IUriService _uriService;
 
-        public AuthorController(IAuthorRepository authorRepository, IMapper mapper)
+        public AuthorController(IAuthorRepository authorRepository, IMapper mapper, IUriService uriService )
         {
             _authorRepository = authorRepository;
             _mapper = mapper;
+            _uriService = uriService;
         }
 
-        // GET api/v1/authors
+        // GET api/v1/authors?pageNumber=1&pageSize=10
         [HttpGet]
-        public async Task<IActionResult> GetAllAuthors()
+        public async Task<IActionResult> GetAllAuthors([FromQuery] PaginationQuery query)
         {
-            var authors = await _authorRepository.GetAllAuthorsAsync();
-
+            var filter = _mapper.Map<PaginationQuery, PaginationFilter>(query);
+            var authors = await _authorRepository.GetAllAuthorsAsync(filter);
             var mapping = _mapper.Map<List<Author>, List<AuthorResponse>>(authors);
-            return Ok(mapping.ToResponse());
+
+            return Ok(mapping.ToPagedResponse(_uriService, query.PageNumber, query.PageSize));
         }
 
         // GET api/v1/authors/{authorId}
