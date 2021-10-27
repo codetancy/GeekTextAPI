@@ -28,12 +28,6 @@ namespace Web.Controllers.V1
                 : BadRequest(new AuthFailedResponse(result.Errors.ToList()));
         }
 
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            return await Task.FromResult(Ok());
-        }
-
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequest request)
         {
@@ -42,12 +36,6 @@ namespace Web.Controllers.V1
             return result.Succeed
                 ? Ok(new AuthSucceedResponse(result.Token))
                 : BadRequest(new AuthFailedResponse(result.Errors.ToList()));
-        }
-
-        [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh()
-        {
-            return await Task.FromResult(Ok());
         }
     }
 }
