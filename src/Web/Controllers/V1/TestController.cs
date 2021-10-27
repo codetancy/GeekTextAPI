@@ -7,6 +7,7 @@ using Web.Repositories.Interfaces;
 
 namespace Web.Controllers.V1
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     [Route("api/v1/tests")]
     public class TestController : ControllerBase
