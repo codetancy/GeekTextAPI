@@ -9,7 +9,6 @@ namespace Web.Data.Configuration
         public void Configure(EntityTypeBuilder<Card> builder)
         {
             // Keys
-            builder.HasKey(card => card.PaymentId);
 
             // Properties
             builder.Property(card => card.CardNumber)

@@ -2,9 +2,8 @@ using System;
 
 namespace Web.Models
 {
-    public class Card
+    public class Card : Payment
     {
-        public Guid PaymentId { get; set; }
         public string CardNumber { get; set; }
         public string CardHolderName { get; set; }
         public int ExpirationMonth { get; set; }

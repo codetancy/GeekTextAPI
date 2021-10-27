@@ -6,10 +6,6 @@ namespace Web.Models
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-
-        public string TypeName { get; set; }
-        public PaymentType Type { get; set; }
-
-        public Card Card { get; set; }
+        public string PaymentType { get; set; }
     }
 }

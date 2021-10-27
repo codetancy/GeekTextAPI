@@ -22,7 +22,6 @@ namespace Web.Data
         public DbSet<WishList> WishLists { get; set; }
         public DbSet<WishListBook> WishListBooks { get; set; }
         public DbSet<Payment> Payments { get; set; }
-        public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<Card> Cards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

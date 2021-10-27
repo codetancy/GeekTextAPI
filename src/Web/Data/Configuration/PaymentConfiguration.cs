@@ -10,17 +10,15 @@ namespace Web.Data.Configuration
         {
             // Keys
             builder.HasKey(payment => payment.Id);
+            builder.HasDiscriminator(payment => payment.PaymentType);
 
             // Properties
+            builder.Property(payment => payment.PaymentType)
+                .HasColumnName(nameof(Payment.PaymentType))
+                .HasMaxLength(16)
+                .IsRequired();
 
             // Relationships
-            builder.HasOne(payment => payment.Card)
-                .WithOne()
-                .HasForeignKey<Card>(card => card.PaymentId);
-
-            builder.HasOne(payment => payment.Type)
-                .WithMany()
-                .HasForeignKey(payment => payment.TypeName);
         }
     }
 }
