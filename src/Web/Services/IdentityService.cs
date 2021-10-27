@@ -74,5 +74,22 @@ namespace Web.Services
 
             return jwtToken;
         }
+
+        public async Task<bool> UsernameExists(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            return user is not null;
+        }
+
+        public async Task<AuthenticationResult> UsernameBelongsToCurrentUser(string username, Guid userId)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null)
+                return new AuthenticationResult {Succeed = false, Errors = new[] {$"No user with username {username}"}};
+
+            return user.Id == userId
+                ? new AuthenticationResult {Succeed = true}
+                : new AuthenticationResult {Succeed = false, Errors = new[] {$"You are not {username}"}};
+        }
     }
 }
