@@ -59,6 +59,7 @@ namespace Web
             services.AddScoped<IAuthorRepository, SqlServerAuthorRepository>();
             services.AddScoped<IWishListRepository, SqlServerWishListRepository>();
             services.AddScoped<ICartRepository, SqlServerCartRepository>();
+            services.AddScoped<ICardRepository, SqlServerCardRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
