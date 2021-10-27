@@ -86,7 +86,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> AddBookToWishList(
             [FromRoute] string wishListName, [FromBody] AddBookToWishListRequest request)
         {
-            return Ok();
+            return await Task.FromResult(Ok());
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> RemoveBookFromWishList(
             [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromBody] RemoveBookFromWishListRequest request)
         {
-            return Ok();
+            return await Task.FromResult(Ok());
         }
     }
 
