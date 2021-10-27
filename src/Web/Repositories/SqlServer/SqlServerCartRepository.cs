@@ -38,20 +38,6 @@ namespace Web.Repositories.SqlServer
 
         public async Task<List<CartBook>> AddBookToCart(Guid cartId, Guid bookId, int quantity = 1)
         {
-            /*
-             * TODO: Christian - Implement adding a book to a cart
-             * First, get the cart, if it doesn't exist return null
-             * Then, see if the book is already in the list of Books by its Id
-             * If yes, add the passed quantity to the cartBook quantity
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * If not, then get the book with _bookRepository.GetBookByIdAsync(), if it doesn't exist return null
-             * Then, create a new CartBook with the quantity and book
-             * Then, add the cartbook to the cart
-             * Then, update the cart with _dbContext.Carts.Update()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly return the created wishlist
-             */
-
             var cart = _dbContext.Carts.Include(c => c.CartBooks).SingleOrDefault(c => cartId == c.CartId);
             if (cart == null) return null;
 
@@ -75,16 +61,6 @@ namespace Web.Repositories.SqlServer
 
         public async Task<List<CartBook>> RemoveBookFromCart(Guid cartId, Guid bookId)
         {
-            /*
-             * TODO: Christian - Implement removing a book from a cart
-             * First, get the cart, if it doesn't exist, return null
-             * Then, see if the book is in the list of Books by its Id, if it doesn't exist, return null
-             * Else, remove the book from the list by its Id
-             * Then, update the cart with _dbContext.Carts.Update()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly return the created wishlist
-             */
-
             var cart = _dbContext.Carts.Include(c => c.CartBooks).SingleOrDefault(c => cartId == c.CartId);
             if (cart == null) return null;
 

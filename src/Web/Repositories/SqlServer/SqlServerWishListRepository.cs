@@ -51,14 +51,6 @@ namespace Web.Repositories.SqlServer
 
         public async Task<bool> CreateWishListAsync(WishList wishList)
         {
-            /*
-             * TODO: Ricardo - Implement adding an wishlist for a user
-             * First, get the number of wishlists the user has with _dbContext.WishLists.Where().Count()
-             * Then, verify the count does not exceed 3, if the count exceeds 3 return null
-             * Else, add the wishlist with _dbContext.Wishlists.AddAsync()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly return the created wishlist
-             */
             int count = await _dbContext.WishLists.Where(w => w.UserId == wishList.UserId).CountAsync();
             if (count >= 3) return false;
 
@@ -70,13 +62,6 @@ namespace Web.Repositories.SqlServer
 
         public async Task<bool> DeleteWishListAsync(string wishListName)
         {
-            /*
-             * TODO: Ricardo - Implement deleting a wishlist
-             * First, get the wishlist from its name
-             * Then, remove the wishList using _dbContext.WishLists.Remove()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly, return true if any record was modified, else false
-             */
             var wishlistToDelete = await _dbContext.WishLists.SingleOrDefaultAsync(w => w.Name == wishListName);
             _dbContext.WishLists.Remove(wishlistToDelete);
             int deleted = await _dbContext.SaveChangesAsync();

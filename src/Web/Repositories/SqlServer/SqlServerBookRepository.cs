@@ -46,21 +46,11 @@ namespace Web.Repositories.SqlServer
 
         public async Task<Book> GetBookByIsbnAsync(string bookIsbn)
         {
-            /*
-             * TODO: Mohamed - Implement getting a book by Isbn
-             * Same implementation as GetBookByIdAsync, but in this case compare by Isbn
-             */
             return await _dbContext.Books.SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
         public async Task<bool> CreateBookAsync(Book book, List<Guid> authorsIds = null)
         {
-            /*
-             * TODO: Mohamed - Implement adding a book
-             * First, add the passed book with _dbContext.Books.AddAsync()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly return true if any record was modified, else false
-             */
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             try
@@ -77,7 +67,7 @@ namespace Web.Repositories.SqlServer
 
                 await transaction.CommitAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
                 return false;
@@ -90,13 +80,6 @@ namespace Web.Repositories.SqlServer
 
         public async Task<bool> DeleteBookAsync(Guid bookId)
         {
-            /*
-             * TODO: Mohamed - Implement deleting a book
-             * First, get the book by Id
-             * Then, remove the author using _dbContext.Books.Remove()
-             * Then, save your changes with _dbContext.SaveChangesAsync()
-             * Lastly, return true if any record was modified, else false
-             */
             var bookToDelete = await GetBookByIdAsync(bookId);
             if (bookToDelete == null) return false;
 
