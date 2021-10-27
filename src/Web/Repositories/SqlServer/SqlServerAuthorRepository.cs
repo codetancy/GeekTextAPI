@@ -40,7 +40,12 @@ namespace Web.Repositories.SqlServer
                 return await _dbContext.Authors.Include(author => author.Books).ToListAsync();
 
             int skipSize = (filter.PageNumber - 1) * filter.PageSize;
-            return await _dbContext.Authors.Skip(skipSize).Take(filter.PageSize).Include(author => author.Books).ToListAsync();
+            return await _dbContext.Authors
+                .Include(author => author.Books)
+                .OrderBy(author => author.Surname)
+                .ThenBy(author => author.Forename)
+                .Skip(skipSize).Take(filter.PageSize)
+                .ToListAsync();
         }
 
         public async Task<Author> GetAuthorByIdAsync(Guid authorId)
