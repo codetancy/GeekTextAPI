@@ -1,4 +1,8 @@
 namespace Web.Contracts.V1.Requests.Queries
 {
-    public record PaginationQuery(int PageNumber = 1, int PageSize = 10);
+    public class PaginationQuery
+    {
+        public int PageNumber { get; init; } = 1;
+        public int PageSize { get; init; } = 10;
+    }
 }

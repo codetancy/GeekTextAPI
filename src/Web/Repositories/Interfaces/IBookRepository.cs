@@ -9,7 +9,8 @@ namespace Web.Repositories.Interfaces
     {
         Task<bool> BookExistsAsync(Guid bookId);
         Task<bool> IsbnExistsAsync(string isbn);
-        Task<List<Book>> GetBooksAsync();
+        Task<List<Book>> GetBooksAsync(BookSearchFilter filter = null);
+        Task<List<Book>> GetTopSellersAsync();
         Task<List<Book>> GetBooksByGenreAsync(string genreName);
         Task<Book> GetBookByIdAsync(Guid bookId);
         Task<Book> GetBookByIsbnAsync(string bookIsbn);

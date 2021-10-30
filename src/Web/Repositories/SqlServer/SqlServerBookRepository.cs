@@ -28,14 +28,27 @@ namespace Web.Repositories.SqlServer
             return await _dbContext.Books.AsNoTracking().AnyAsync(b => b.Isbn == isbn);
         }
 
-        public async Task<List<Book>> GetBooksAsync()
+        public async Task<List<Book>> GetBooksAsync(BookSearchFilter filter = null)
         {
-            return await _dbContext.Books.ToListAsync();
+            if (filter is null)
+                return await _dbContext.Books.ToListAsync();
+
+            var query = _dbContext.Books.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.GenreName))
+                query = query.Where(book => book.GenreName == filter.GenreName);
+
+            int skipSize = (filter.PageNumber - 1) * filter.PageSize;
+            return await query
+                .OrderBy(book => book.Title)
+                .Skip(skipSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
         }
 
-        public async Task<List<Book>> GetBooksByGenreAsync(string genreName)
+        public async Task<List<Book>> GetTopSellersAsync()
         {
-            return await _dbContext.Books.Where(book => book.GenreName == genreName).ToListAsync();
+            return await _dbContext.Books.OrderByDescending(book => book.CopiesSold).Take(10).ToListAsync();
         }
 
         public async Task<Book> GetBookByIdAsync(Guid bookId)

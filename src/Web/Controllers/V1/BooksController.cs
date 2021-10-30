@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Contracts.V1.Requests.Queries;
 using Web.Contracts.V1.Responses;
+using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
+using Web.Services.Interfaces;
 
 namespace Web.Controllers.V1
 {
@@ -14,29 +18,34 @@ namespace Web.Controllers.V1
     public class BooksController : ControllerBase
     {
         private readonly IAuthorRepository _authorRepository;
+        private readonly IUriService _uriService;
         private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBookRepository bookRepository, IAuthorRepository authorRepository)
+        public BooksController(IBookRepository bookRepository, IAuthorRepository authorRepository, IUriService uriService, IMapper mapper)
         {
             _bookRepository = bookRepository;
             _authorRepository = authorRepository;
+            _uriService = uriService;
+            _mapper = mapper;
         }
 
         // GET api/v1/books?genreName
         [HttpGet]
-        public async Task<IActionResult> GetAllBooks([FromQuery] string genreName)
+        public async Task<IActionResult> GetAllBooks([FromQuery] GetBooksQuery query)
         {
-            if (string.IsNullOrEmpty(genreName))
-            {
-                var books = await _bookRepository.GetBooksAsync();
-                return Ok(books);
-            }
-            else
-            {
-                var books = await _bookRepository.GetBooksByGenreAsync(genreName);
-                if (books?.Any() ?? false) return NotFound(new { Error = "Given genre does not exist." });
-                return Ok(books);
-            }
+            var filter = _mapper.Map<GetBooksQuery, BookSearchFilter>(query);
+
+            var books = await _bookRepository.GetBooksAsync(filter);
+            return Ok(books.ToPagedResponse(_uriService, filter.PageNumber, filter.PageSize));
+        }
+
+        // GET api/v1/books/best-selling
+        [HttpGet("best-sellers")]
+        public async Task<IActionResult> GetTopSellers()
+        {
+            var books = await _bookRepository.GetTopSellersAsync();
+            return Ok(books.ToResponse());
         }
 
         // GET ap1/v1/books/{bookId}
