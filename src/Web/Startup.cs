@@ -60,6 +60,7 @@ namespace Web
             services.AddScoped<IWishListRepository, SqlServerWishListRepository>();
             services.AddScoped<ICartRepository, SqlServerCartRepository>();
             services.AddScoped<ICardRepository, SqlServerCardRepository>();
+            services.AddScoped<IGenreRepository, SqlServerGenreRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddDbContext<AppDbContext>(options =>
