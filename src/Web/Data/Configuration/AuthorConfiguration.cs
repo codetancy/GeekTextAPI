@@ -27,6 +27,9 @@ namespace Web.Data.Configuration
             builder.Property(author => author.Biography)
                 .HasMaxLength(256);
 
+            builder.Property(author => author.Publisher)
+                .HasMaxLength(64);
+
             // Relationships
             builder.HasMany(author => author.BookAuthors)
                 .WithOne(bookAuthor => bookAuthor.Author)

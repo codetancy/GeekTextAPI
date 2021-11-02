@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Routing.Matching;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Requests.Queries;
 using Web.Contracts.V1.Responses;
@@ -13,9 +14,7 @@ namespace Web.Mappings
         {
             CreateMap<GetBooksQuery, BookSearchFilter>(MemberList.Source);
 
-            CreateMap<CreateBookRequest, Book>(MemberList.None)
-                .ForMember(dest => dest.PublisherId, opts => opts.AllowNull())
-                .ForSourceMember(src => src.AuthorsIds, opts => opts.DoNotValidate());
+            CreateMap<CreateBookRequest, Book>(MemberList.None);
 
             CreateMap<Book, SimpleBookResponse>(MemberList.Destination);
 

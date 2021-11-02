@@ -13,9 +13,6 @@ namespace Web.Mappings
             CreateMap<CreateAuthorRequest, Author>(MemberList.Source);
 
             CreateMap<Author, AuthorResponse>(MemberList.Destination)
-                .ForMember(dest => dest.Publisher,
-                    opts => opts.MapFrom(
-                        src => src.Publisher.Name))
                 .ForMember(dest => dest.Books,
                     opts => opts.MapFrom(
                         src => src.Books.Select(book => new SimpleBookResponse(book.Id, book.Title))));

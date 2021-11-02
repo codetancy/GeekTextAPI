@@ -30,11 +30,10 @@ namespace Web.Data.Configuration
             builder.Property(book => book.YearPublished)
                 .IsRequired();
 
-            // Relationships
-            builder.HasOne(book => book.Publisher)
-                .WithMany()
-                .HasForeignKey(book => book.PublisherId);
+            builder.Property(book => book.Publisher)
+                .HasMaxLength(64);
 
+            // Relationships
             builder.HasOne(book => book.Genre)
                 .WithMany()
                 .HasForeignKey(book => book.GenreName)

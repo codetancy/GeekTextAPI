@@ -12,9 +12,7 @@ namespace Web.Models
         public decimal UnitPrice { get; set; }
         public int CopiesSold { get; set; }
         public int YearPublished { get; set; }
-
-        public Guid? PublisherId { get; set; }
-        public Publisher Publisher { get; set; }
+        public string Publisher { get; set; }
 
         public string GenreName { get; set; }
         public Genre Genre { get; set; }

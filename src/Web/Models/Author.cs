@@ -10,9 +10,7 @@ namespace Web.Models
         public string Surname { get; set; }
         public string PenName { get; set; }
         public string Biography { get; set; }
-
-        public Guid? PublisherId { get; set; }
-        public Publisher Publisher { get; set; }
+        public string Publisher { get; set; }
 
         public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
         public ICollection<Book> Books { get; set; } = new List<Book>();
