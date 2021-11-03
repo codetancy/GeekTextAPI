@@ -46,12 +46,12 @@ namespace Web.Controllers.V1
         [HttpPost("books")]
         public async Task<IActionResult> AddBookToCart([FromBody] AddBookToCartRequest request)
         {
-            (Guid bookId, Guid cartId) = request;
-            var books = await _cartRepository.AddBookToCart(cartId, bookId);
+            (Guid bookId, Guid cartId, int quantity) = request;
+            var books = await _cartRepository.AddBookToCart(cartId, bookId, quantity);
 
-            return books == null
-                ? NotFound($"Book with ID {bookId} does not exist.")
-                : Ok(books);
+            if (books is null) return NotFound($"Book with ID {bookId} does not exist.");
+
+            
         }
 
         [HttpDelete("books/{bookId:guid}")]
