@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Contracts.V1.Responses;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
@@ -15,11 +18,14 @@ namespace Web.Controllers.V1
     public class WishListController : ControllerBase
     {
         private readonly IWishListRepository _wishListRepository;
+        private readonly IMapper _mapper;
         private readonly IBookRepository _bookRepository;
 
-        public WishListController(IWishListRepository wishListRepository, IBookRepository bookRepository)
+        public WishListController(IWishListRepository wishListRepository, IBookRepository bookRepository, IMapper mapper)
         {
             _wishListRepository = wishListRepository;
+            _mapper = mapper;
+            _bookRepository = bookRepository;
         }
 
         // GET api/v1/wishlists
@@ -30,7 +36,8 @@ namespace Web.Controllers.V1
             if (userId == Guid.Empty) return BadRequest();
 
             var wishList = await _wishListRepository.GetUserWishListsAsync(userId);
-            return Ok(wishList);
+            var mapping = _mapper.Map<List<WishList>, List<WishListResponse>>(wishList);
+            return Ok(mapping.ToResponse());
         }
 
         // GET api/v1/wishlists/{wishListName}/books
@@ -41,7 +48,9 @@ namespace Web.Controllers.V1
             var wishList = await _wishListRepository.GetWishListByNameAsync(wishListName);
             if (wishList is null) return NotFound(new {Error = $"Wishlist {wishListName} does not exist."});
 
-            return Ok(wishList);
+            var mapping = _mapper.Map<WishList, WishListResponse>(wishList);
+
+            return Ok(mapping.ToResponse());
         }
 
         // POST api/v1/wishlists
@@ -133,6 +142,7 @@ namespace Web.Controllers.V1
                 return NotFound(new { Error = $"Book {bookId} does not exist." });
 
             return NoContent();
+        }
     }
 
 }
