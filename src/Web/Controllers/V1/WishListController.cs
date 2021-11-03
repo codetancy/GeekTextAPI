@@ -15,8 +15,9 @@ namespace Web.Controllers.V1
     public class WishListController : ControllerBase
     {
         private readonly IWishListRepository _wishListRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public WishListController(IWishListRepository wishListRepository)
+        public WishListController(IWishListRepository wishListRepository, IBookRepository bookRepository)
         {
             _wishListRepository = wishListRepository;
         }
@@ -86,7 +87,22 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> AddBookToWishList(
             [FromRoute] string wishListName, [FromBody] AddBookToWishListRequest request)
         {
-            return await Task.FromResult(Ok());
+            var userId = HttpContext.GetUserId();
+
+            bool exists = await _wishListRepository.WishListExists(wishListName);
+            if (!exists)
+                return NotFound(new { Error = $"Wishlist {wishListName} does not exist." });
+
+            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!isOwner)
+                return BadRequest(new { Error = "You do not own this wishlist." });
+
+            bool bookExists = await _bookRepository.BookExistsAsync(request.BookId);
+            if (!bookExists)
+                return NotFound(new { Error = $"Book {request.BookId} does not exist." });
+
+
+            return NoContent();
         }
 
         /// <summary>
@@ -102,8 +118,21 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> RemoveBookFromWishList(
             [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromBody] RemoveBookFromWishListRequest request)
         {
-            return await Task.FromResult(Ok());
-        }
+            var userId = HttpContext.GetUserId();
+
+            bool exists = await _wishListRepository.WishListExists(wishListName);
+            if (!exists)
+                return NotFound(new { Error = $"Wishlist {wishListName} does not exist." });
+
+            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!isOwner)
+                return BadRequest(new { Error = "You do not own this wishlist." });
+
+            bool bookExists = await _bookRepository.BookExistsAsync(bookId);
+            if (!bookExists)
+                return NotFound(new { Error = $"Book {bookId} does not exist." });
+
+            return NoContent();
     }
 
 }

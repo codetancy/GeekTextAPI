@@ -46,7 +46,10 @@ namespace Web.Repositories.SqlServer
 
         public async Task<WishList> GetWishListByNameAsync(string wishListName)
         {
-            return await _dbContext.WishLists.SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
+            return await _dbContext.WishLists
+                .Include(w => w.WishListBooks)
+                .ThenInclude(wb => wb.Book)
+                .SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
         }
 
         public async Task<bool> CreateWishListAsync(WishList wishList)
@@ -69,8 +72,43 @@ namespace Web.Repositories.SqlServer
             return deleted > 0;
         }
 
-        public Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId) => throw new NotImplementedException();
+        public async Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId)
+        {
+            var wishList = await GetWishListByNameAsync(wishListName);
+            if (wishList is null)
+                return false;
 
-        public Task<bool> RemoveBookFromWishListAsync(string wishListName, Guid bookId) => throw new NotImplementedException();
+            bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
+            if(!wishListContainsBook)
+            {
+                wishList.WishListBooks.Add(new WishListBook(wishListName, bookId));
+            }
+
+            _dbContext.WishLists.Update(wishList);
+            int changed = await _dbContext.SaveChangesAsync();
+
+            return changed > 0;
+
+        }
+
+        public async Task<bool> RemoveBookFromWishListAsync(string wishListName, Guid bookId)
+        {
+            var wishList = await GetWishListByNameAsync(wishListName);
+            if (wishList is null)
+                return false;
+
+            bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
+            if (wishListContainsBook)
+            {
+
+                var bookToRemove = wishList.WishListBooks.Single(wb => wb.BookId == bookId);
+                wishList.WishListBooks.Remove(bookToRemove);
+            }
+
+            _dbContext.WishLists.Update(wishList);
+            int changes = await _dbContext.SaveChangesAsync();
+            return changes > 0;
+
+        }
     }
 }
