@@ -9,6 +9,6 @@ namespace Web.Models
         public string Description { get; set; }
         public Guid UserId { get; set; }
 
-        public ICollection<WishListBook> WishListBooks { get; set; }
+        public ICollection<WishListBook> WishListBooks { get; set; } = new List<WishListBook>();
     }
 }

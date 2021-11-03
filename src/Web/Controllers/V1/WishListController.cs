@@ -110,6 +110,9 @@ namespace Web.Controllers.V1
             if (!bookExists)
                 return NotFound(new { Error = $"Book {request.BookId} does not exist." });
 
+            bool added = await _wishListRepository.AddBookToWishListAsync(wishListName, request.BookId);
+            if (!added)
+                return BadRequest(new {Error = "Unable to add book to the wishlist"});
 
             return NoContent();
         }
@@ -140,6 +143,10 @@ namespace Web.Controllers.V1
             bool bookExists = await _bookRepository.BookExistsAsync(bookId);
             if (!bookExists)
                 return NotFound(new { Error = $"Book {bookId} does not exist." });
+
+            bool removed = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId);
+            if (!removed)
+                return BadRequest(new {Error = "Unable to remove book from wishlist"});
 
             return NoContent();
         }

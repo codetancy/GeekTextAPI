@@ -41,7 +41,12 @@ namespace Web.Repositories.SqlServer
 
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
         {
-            return await _dbContext.WishLists.Where(wishlist => wishlist.UserId == userId).ToListAsync();
+            return await _dbContext
+                .WishLists
+                .Include(w => w.WishListBooks)
+                .ThenInclude(wb => wb.Book)
+                .Where(wishlist => wishlist.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task<WishList> GetWishListByNameAsync(string wishListName)
@@ -100,7 +105,6 @@ namespace Web.Repositories.SqlServer
             bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
             if (wishListContainsBook)
             {
-
                 var bookToRemove = wishList.WishListBooks.Single(wb => wb.BookId == bookId);
                 wishList.WishListBooks.Remove(bookToRemove);
             }
@@ -108,7 +112,6 @@ namespace Web.Repositories.SqlServer
             _dbContext.WishLists.Update(wishList);
             int changes = await _dbContext.SaveChangesAsync();
             return changes > 0;
-
         }
     }
 }
