@@ -1,4 +1,7 @@
+using System.Linq;
 using AutoMapper;
+using Web.Contracts.V1.Responses;
+using Web.Models;
 
 namespace Web.Mappings
 {
@@ -12,7 +15,7 @@ namespace Web.Mappings
                     context.Mapper.Map<Book, SimpleBookResponse>(source.Book)));
 
             CreateMap<Cart, CartResponse>(MemberList.None)
-                .ForMember(dest => dest.Cartbooks,
+                .ForMember(dest => dest.CartBooks,
                     opts => opts.MapFrom((source, _, _, context) =>
                         source.CartBooks.Select(
                             cartBook => context.Mapper.Map<CartBook, CartBookResponse>(cartBook))));

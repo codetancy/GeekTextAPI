@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
@@ -31,7 +32,7 @@ namespace Web.Controllers.V1
             var userId = HttpContext.GetUserId();
             var cart = await _cartRepository.GetCartByUserIdAsync(userId);
             if(cart is null) return NotFound("There is no cart for the current user");
-            
+
             var mapping = _mapper.Map<Cart, CartResponse>(cart);
             return Ok(mapping.ToResponse());
         }
@@ -44,8 +45,8 @@ namespace Web.Controllers.V1
             var cart = new Cart { UserId = userId };
             bool created = await _cartRepository.CreateCartForUserAsync(userId, cart);
             if(!created) return BadRequest(new {Error = "User already reached maximum number of carts."});
-            
-            var mapping = _mapper.MapL<Cart, CartResponse>(cart);
+
+            var mapping = _mapper.Map<Cart, CartResponse>(cart);
             return CreatedAtAction(nameof(GetUserCart), new {cartId = mapping.CartId}, mapping.ToResponse());
         }
 
