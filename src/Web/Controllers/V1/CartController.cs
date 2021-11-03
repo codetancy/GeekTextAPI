@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
+using Web.Contracts.V1.Responses;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
@@ -15,10 +16,12 @@ namespace Web.Controllers.V1
     public class CartController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
+        private readonly IMapper _mapper;
 
-        public CartController(ICartRepository cartRepository)
+        public CartController(ICartRepository cartRepository, IMapper mapper)
         {
             _cartRepository = cartRepository;
+            _mapper = mapper;
         }
 
         // GET api/v1/cart
@@ -27,7 +30,10 @@ namespace Web.Controllers.V1
         {
             var userId = HttpContext.GetUserId();
             var cart = await _cartRepository.GetCartByUserIdAsync(userId);
-            return cart is null ? NotFound("There is no cart for the current user") : Ok(cart);
+            if(cart is null) return NotFound("There is no cart for the current user");
+            
+            var mapping = _mapper.Map<Cart, CartResponse>(cart);
+            return Ok(mapping.ToResponse());
         }
 
         // POST api/v1/cart
@@ -37,9 +43,10 @@ namespace Web.Controllers.V1
             var userId = HttpContext.GetUserId();
             var cart = new Cart { UserId = userId };
             bool created = await _cartRepository.CreateCartForUserAsync(userId, cart);
-            return created
-                ? CreatedAtAction(nameof(GetUserCart), new {cartId = cart.CartId}, cart)
-                : BadRequest();
+            if(!created) return BadRequest(new {Error = "User already reached maximum number of carts."});
+            
+            var mapping = _mapper.MapL<Cart, CartResponse>(cart);
+            return CreatedAtAction(nameof(GetUserCart), new {cartId = mapping.CartId}, mapping.ToResponse());
         }
 
         // POST api/v1/cart/books
@@ -47,22 +54,24 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> AddBookToCart([FromBody] AddBookToCartRequest request)
         {
             (Guid bookId, Guid cartId, int quantity) = request;
-            var books = await _cartRepository.AddBookToCart(cartId, bookId, quantity);
+            var cart = await _cartRepository.AddBookToCart(cartId, bookId, quantity);
 
-            if (books is null) return NotFound($"Book with ID {bookId} does not exist.");
+            if (cart is null) return NotFound($"Book with ID {bookId} does not exist.");
 
-            
+            var mapping = _mapper.Map<Cart, CartResponse>(cart);
+            return Ok(mapping.ToResponse());
         }
 
         [HttpDelete("books/{bookId:guid}")]
         public async Task<IActionResult> RemoveBookFromCart(
             [FromRoute] Guid bookId, [FromBody] RemoveBookFromCartRequest request)
         {
-            var books = await _cartRepository.RemoveBookFromCart(request.CartId, bookId);
+            var cart = await _cartRepository.RemoveBookFromCart(request.CartId, bookId);
 
-            return books == null
-                ? BadRequest()
-                : Ok(books);
+            if(cart is null) return BadRequest(new {Error = "Unable to delete book from cart"});
+
+            var mapping = _mapper.Map<Cart, CartResponse>(cart);
+            return Ok(mapping.ToResponse());
         }
     }
 }
