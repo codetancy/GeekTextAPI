@@ -1,6 +1,6 @@
 namespace Web.Contracts.V1.Responses
 {
-    public class CartBookResponse
+    public class CartBookResponse : Response
     {
         public SimpleBookResponse Book { get; set; }
         public int Quantity { get; set; }

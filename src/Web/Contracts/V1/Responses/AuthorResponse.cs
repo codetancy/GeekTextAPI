@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Web.Contracts.V1.Responses
 {
-    public class AuthorResponse
+    public class AuthorResponse : Response
     {
         public Guid Id { get; init; }
         public string Forename { get; init; }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Web.Contracts.V1.Responses
 {
-    public class WishListBookResponse
+    public class WishListBookResponse : Response
     {
         public SimpleBookResponse Book { get; set; }
     }

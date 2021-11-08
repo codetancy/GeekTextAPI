@@ -1,6 +1,6 @@
 namespace Web.Contracts.V1.Responses
 {
-    public class AuthSucceedResponse
+    public class AuthSucceedResponse : Response
     {
         public string Token { get; init; }
 

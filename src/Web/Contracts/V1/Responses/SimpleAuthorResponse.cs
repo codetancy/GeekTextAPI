@@ -2,7 +2,7 @@ using System;
 
 namespace Web.Contracts.V1.Responses
 {
-    public class SimpleAuthorResponse
+    public class SimpleAuthorResponse : Response
     {
         public Guid Id { get; init; }
         public string PenName { get; init; }
