@@ -2,5 +2,13 @@ using System.Collections.Generic;
 
 namespace Web.Contracts.V1.Responses
 {
-    public record AuthFailedResponse(List<string> Errors);
+    public class AuthFailedResponse
+    {
+        public IEnumerable<string> Errors { get; init; }
+
+        public AuthFailedResponse(IEnumerable<string> errors)
+        {
+            Errors = errors;
+        }
+    }
 }
