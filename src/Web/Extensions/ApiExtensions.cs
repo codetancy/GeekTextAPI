@@ -15,12 +15,14 @@ namespace Web.Extensions
             return Guid.TryParse(potentialId, out Guid userId) ? userId : Guid.Empty;
         }
 
-        public static SingleResponse<T> ToSingleResponse<T>(this T response) where T : class
+        public static SingleResponse<T> ToSingleResponse<T>(this T response) where T : Response
             => new SingleResponse<T>(response);
 
-        public static PagedResponse<T> ToPagedResponse<T>(
-            this IEnumerable<T> response, IUriService uriService, int pageNumber, int pageSize)
-            where T : class
+        public static ListedResponse<T> ToListedResponse<T>(this IEnumerable<T> response) where T : Response
+            => new ListedResponse<T>(response);
+
+        public static PagedResponse<T> ToPagedResponse<T>(this IEnumerable<T> response,
+            IUriService uriService, int pageNumber, int pageSize) where T : Response
         {
             string previousPage = null;
             if (pageNumber > 1)

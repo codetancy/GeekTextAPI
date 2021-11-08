@@ -1,6 +1,6 @@
 namespace Web.Contracts.V1.Responses
 {
-    public class SingleResponse<T> where T : class
+    public class SingleResponse<T> where T : Response
     {
         public T Data { get; }
 

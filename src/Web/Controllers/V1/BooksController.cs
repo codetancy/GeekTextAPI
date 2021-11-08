@@ -47,7 +47,8 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetTopSellers()
         {
             var books = await _bookRepository.GetTopSellersAsync();
-            return Ok(books.ToSingleResponse());
+            var mapping = _mapper.Map<List<Book>, List<BookResponse>>(books);
+            return Ok(mapping.ToListedResponse());
         }
 
         // GET ap1/v1/books/{bookId}

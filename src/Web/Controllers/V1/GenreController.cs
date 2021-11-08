@@ -34,8 +34,8 @@ namespace Web.Controllers.V1
         {
             var filter = _mapper.Map<PaginationQuery, PaginationFilter>(query);
             var genres = await _genreRepository.GetAllGenresAsync(filter);
-            var mapping = _mapper.Map<List<Genre>, GenreNamesResponse>(genres);
-            return Ok(mapping.Genres.ToPagedResponse(_uriService, filter.PageNumber, filter.PageSize));
+            var mapping = _mapper.Map<List<Genre>, List<GenreResponse>>(genres);
+            return Ok(mapping.ToListedResponse());
         }
 
         [HttpPost]

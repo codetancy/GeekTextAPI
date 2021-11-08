@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Web.Contracts.V1.Responses
 {
-    public class PagedResponse<T> where T : class
+    public class PagedResponse<T> where T : Response
     {
         public IEnumerable<T> Data { get; }
         public int PageNumber { get; }
