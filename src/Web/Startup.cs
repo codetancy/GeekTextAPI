@@ -15,7 +15,6 @@ using Web.Data;
 using Web.Data.Identities;
 using Web.Options;
 using Web.Repositories.Interfaces;
-using Web.Repositories.Locals;
 using Web.Repositories.SqlServer;
 using Web.Services;
 using Web.Services.Interfaces;
@@ -54,7 +53,6 @@ namespace Web
                 return new UriService(sb.ToString());
             });
 
-            services.AddSingleton<ITestRepository, LocalTestRepository>();
             services.AddScoped<IBookRepository, SqlServerBookRepository>();
             services.AddScoped<IAuthorRepository, SqlServerAuthorRepository>();
             services.AddScoped<IWishListRepository, SqlServerWishListRepository>();
