@@ -15,8 +15,8 @@ namespace Web.Extensions
             return Guid.TryParse(potentialId, out Guid userId) ? userId : Guid.Empty;
         }
 
-        public static Response<T> ToResponse<T>(this T response) where T : class
-            => new Response<T>(response);
+        public static SingleResponse<T> ToResponse<T>(this T response) where T : class
+            => new SingleResponse<T>(response);
 
         public static PagedResponse<T> ToPagedResponse<T>(
             this IEnumerable<T> response, IUriService uriService, int pageNumber, int pageSize)
