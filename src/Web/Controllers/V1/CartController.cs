@@ -34,7 +34,7 @@ namespace Web.Controllers.V1
             if(cart is null) return NotFound("There is no cart for the current user");
 
             var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         // POST api/v1/cart
@@ -47,7 +47,7 @@ namespace Web.Controllers.V1
             if(!created) return BadRequest(new {Error = "User already reached maximum number of carts."});
 
             var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return CreatedAtAction(nameof(GetUserCart), new {cartId = mapping.CartId}, mapping.ToResponse());
+            return CreatedAtAction(nameof(GetUserCart), new {cartId = mapping.CartId}, mapping.ToSingleResponse());
         }
 
         // POST api/v1/cart/books
@@ -60,7 +60,7 @@ namespace Web.Controllers.V1
             if (cart is null) return NotFound($"Book with ID {bookId} does not exist.");
 
             var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         [HttpDelete("books/{bookId:guid}")]
@@ -72,7 +72,7 @@ namespace Web.Controllers.V1
             if(cart is null) return BadRequest(new {Error = "Unable to delete book from cart"});
 
             var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Web.Controllers.V1
             if (author is null) return NotFound(new { Error = $"Author {authorId} does not exist" });
 
             var mapping = _mapper.Map<Author, AuthorResponse>(author);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         // POST api/v1/authors
@@ -61,7 +61,7 @@ namespace Web.Controllers.V1
             if (!success) return BadRequest(new { Error = "Unable to create author" });
 
             var mapping = _mapper.Map<Author, AuthorResponse>(author);
-            return CreatedAtAction(nameof(GetAuthorById), new { authorId = mapping.Id }, mapping.ToResponse());
+            return CreatedAtAction(nameof(GetAuthorById), new { authorId = mapping.Id }, mapping.ToSingleResponse());
         }
 
         // PUT api/v1/authors/{authorId}

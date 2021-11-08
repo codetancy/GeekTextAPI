@@ -37,7 +37,7 @@ namespace Web.Controllers.V1
 
             var wishList = await _wishListRepository.GetUserWishListsAsync(userId);
             var mapping = _mapper.Map<List<WishList>, List<WishListResponse>>(wishList);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         // GET api/v1/wishlists/{wishListName}/books
@@ -50,7 +50,7 @@ namespace Web.Controllers.V1
 
             var mapping = _mapper.Map<WishList, WishListResponse>(wishList);
 
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         // POST api/v1/wishlists

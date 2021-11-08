@@ -60,7 +60,7 @@ namespace Web.Controllers.V1
             var mapping = _mapper.Map<List<Card>, UserCardResponse>(cards);
             var m = _mapper.Map<Card, SimpleCardResponse>(cards.First());
 
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         [HttpPost("{username}/cards")]
@@ -76,7 +76,7 @@ namespace Web.Controllers.V1
             if (!success) return BadRequest(new {Error = "Unable to create card."});
             var mapping = _mapper.Map<Card, SimpleCardResponse>(card);
 
-            return CreatedAtAction(nameof(GetUserCards), new { username = username }, mapping.ToResponse());
+            return CreatedAtAction(nameof(GetUserCards), new { username = username }, mapping.ToSingleResponse());
         }
 
         [HttpDelete("{username}/cards/{cardId:guid}")]

@@ -49,7 +49,7 @@ namespace Web.Controllers.V1
             if (!succeed) return BadRequest(new {Error = "Unable to delete genre."});
 
             var mapping = _mapper.Map<Genre, GenreResponse>(genre);
-            return CreatedAtAction(nameof(GetAllGenres), mapping.ToResponse());
+            return CreatedAtAction(nameof(GetAllGenres), mapping.ToSingleResponse());
         }
     }
 }

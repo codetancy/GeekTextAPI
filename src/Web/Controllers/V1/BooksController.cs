@@ -47,7 +47,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> GetTopSellers()
         {
             var books = await _bookRepository.GetTopSellersAsync();
-            return Ok(books.ToResponse());
+            return Ok(books.ToSingleResponse());
         }
 
         // GET ap1/v1/books/{bookId}
@@ -58,7 +58,7 @@ namespace Web.Controllers.V1
             if (book is null) return NotFound(new { Error = $"Book {bookId} does not exist" });
 
             var mapping = _mapper.Map<Book, BookResponse>(book);
-            return Ok(mapping.ToResponse());
+            return Ok(mapping.ToSingleResponse());
         }
 
         // POST api/v1/books
@@ -85,7 +85,7 @@ namespace Web.Controllers.V1
             if (!success) return BadRequest(new { Error = "Unable to create book." });
 
             var mapping = _mapper.Map<Book, BookResponse>(newBook);
-            return CreatedAtAction(nameof(GetBookById), new { bookId = mapping.Id }, mapping.ToResponse());
+            return CreatedAtAction(nameof(GetBookById), new { bookId = mapping.Id }, mapping.ToSingleResponse());
         }
 
         // DELETE api/v1/books/{bookId}
