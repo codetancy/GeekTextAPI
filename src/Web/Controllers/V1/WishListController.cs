@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
+using Web.Errors;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
@@ -118,14 +120,17 @@ namespace Web.Controllers.V1
         }
 
         /// <summary>
-        /// Removes a book from a wishlist, either permanently or into a shopping cart.
+        /// Removes book from wishlist, either permanently or adds it to the shopping cart.
         /// </summary>
-        /// <example>DELETE api/v1/wishlists/{wishListName}/books/{bookId}</example>
+        /// <remarks>This can only be done by the logged in user</remarks>
         /// <param name="wishListName">Name of the wishlist to modify</param>
         /// <param name="bookId">Id of the book to remove</param>
         /// <param name="request">Additional request parameters</param>
         /// <seealso cref="RemoveBookFromWishListRequest"/>
-        /// <returns></returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Invalid wishlist/book supplied</response>
+        /// <response code="401">User does not own resource</response>
+        /// <response code="404">Wishlist or book not found</response>
         [HttpDelete("{wishListName}/books/{bookId:guid}")]
         public async Task<IActionResult> RemoveBookFromWishList(
             [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromBody] RemoveBookFromWishListRequest request)
@@ -133,22 +138,18 @@ namespace Web.Controllers.V1
             var userId = HttpContext.GetUserId();
 
             bool exists = await _wishListRepository.WishListExists(wishListName);
-            if (!exists)
-                return NotFound(new { Error = $"Wishlist {wishListName} does not exist." });
+            if (!exists) return NotFound(new WishListDoesNotExist(wishListName));
 
             bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
-            if (!isOwner)
-                return BadRequest(new { Error = "You do not own this wishlist." });
+            if (!isOwner) return Unauthorized(new UserIsNotOwner(nameof(WishList)));
 
             bool bookExists = await _bookRepository.BookExistsAsync(bookId);
-            if (!bookExists)
-                return NotFound(new { Error = $"Book {bookId} does not exist." });
+            if (!bookExists) return NotFound(new BookDoesNotExist(bookId));
 
             bool removed = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId);
-            if (!removed)
-                return BadRequest(new {Error = "Unable to remove book from wishlist"});
+            if (!removed) return BadRequest(new UnableToDelete(nameof(Book)));
 
-            return NoContent();
+            return Ok();
         }
     }
 
