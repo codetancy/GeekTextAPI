@@ -11,5 +11,11 @@ namespace Web.Models
 
         public int Quantity { get; set; }
         public decimal Price { get; set; }
+
+        public CartBook(Guid cartId, Guid bookId)
+        {
+            CartId = cartId;
+            BookId = bookId;
+        }
     }
 }
