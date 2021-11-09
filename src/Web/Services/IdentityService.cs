@@ -75,13 +75,7 @@ namespace Web.Services
             return jwtToken;
         }
 
-        public async Task<bool> UsernameExists(string username)
-        {
-            var user = await _userManager.FindByNameAsync(username);
-            return user is not null;
-        }
-
-        public async Task<AuthenticationResult> UsernameBelongsToCurrentUser(string username, Guid userId)
+        public async Task<AuthenticationResult> UserNameBelongsToUserAsync(string username, Guid userId)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
@@ -90,6 +84,21 @@ namespace Web.Services
             return user.Id == userId
                 ? new AuthenticationResult {Succeed = true}
                 : new AuthenticationResult {Succeed = false, Errors = new[] {$"You are not {username}"}};
+        }
+
+        public async Task<ApplicationUser> GetUserByIdAsync(Guid userId)
+        {
+            return await _userManager.FindByIdAsync(userId.ToString());
+        }
+
+        public async Task<ApplicationUser> GetUserByNameAsync(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName);
+        }
+
+        public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
+        {
+            return await _userManager.UpdateAsync(user);
         }
     }
 }

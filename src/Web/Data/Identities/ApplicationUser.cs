@@ -7,9 +7,9 @@ namespace Web.Data.Identities
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
-        public ICollection<ApplicationUserRole> UserRoles { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-        public ICollection<WishList> WishLists { get; set; }
-        public ICollection<Cart> Carts { get; set; }
+        public ICollection<ApplicationUserRole> UserRoles { get; set; } = new List<ApplicationUserRole>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public ICollection<WishList> WishLists { get; set; } = new List<WishList>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
     }
 }

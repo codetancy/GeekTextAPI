@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
+using Web.Data.Identities;
+using Web.Errors;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
@@ -30,44 +31,50 @@ namespace Web.Controllers.V1
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            return await Task.FromResult(Ok());
-        }
-
-        [HttpGet("{username}")]
+        /// <summary>
+        /// Get user by user name
+        /// </summary>
+        /// <param name="userName">User to retrieve</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpGet("{userName}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetUser(string username)
+        public async Task<IActionResult> GetUser(string userName)
         {
-            return await Task.FromResult(Ok());
+            var user = await _identityService.GetUserByNameAsync(userName);
+            if (user is null) return NotFound(new UserDoesNotExist(userName));
+
+            return (user.Id == HttpContext.GetUserId()) switch
+            {
+                true => Ok(_mapper.Map<ApplicationUser, LoggedUserResponse>(user).ToSingleResponse()),
+                false => Ok(_mapper.Map<ApplicationUser, UserReponse>(user).ToSingleResponse())
+            };
         }
 
-        [HttpPut("{username}")]
+        [HttpPut("{userName}")]
         public async Task<IActionResult> UpdateUser()
         {
             return await Task.FromResult(Ok());
         }
 
-        [HttpGet("{username}/cards")]
-        public async Task<IActionResult> GetUserCards(string username)
+        [HttpGet("{userName}/cards")]
+        public async Task<IActionResult> GetUserCards(string userName)
         {
             var userId = HttpContext.GetUserId();
-            var result = await _identityService.UsernameBelongsToCurrentUser(username, userId);
+            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
             if (!result.Succeed) return BadRequest(result.Errors);
 
             var cards = await _cardRepository.GetUserCardsAsync(userId);
             var mapping = _mapper.Map<List<Card>, UserCardResponse>(cards);
-            var m = _mapper.Map<Card, SimpleCardResponse>(cards.First());
 
             return Ok(mapping.ToSingleResponse());
         }
 
-        [HttpPost("{username}/cards")]
-        public async Task<IActionResult> CreateCard([FromRoute] string username, [FromBody] CreateCardRequest request)
+        [HttpPost("{userName}/cards")]
+        public async Task<IActionResult> CreateCard([FromRoute] string userName, [FromBody] CreateCardRequest request)
         {
             var userId = HttpContext.GetUserId();
-            var result = await _identityService.UsernameBelongsToCurrentUser(username, userId);
+            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
             if (!result.Succeed) return BadRequest(result.Errors);
 
             var card = _mapper.Map<CreateCardRequest, Card>(request);
@@ -76,14 +83,14 @@ namespace Web.Controllers.V1
             if (!success) return BadRequest(new {Error = "Unable to create card."});
             var mapping = _mapper.Map<Card, SimpleCardResponse>(card);
 
-            return CreatedAtAction(nameof(GetUserCards), new { username = username }, mapping.ToSingleResponse());
+            return CreatedAtAction(nameof(GetUserCards), new { userName = userName }, mapping.ToSingleResponse());
         }
 
-        [HttpDelete("{username}/cards/{cardId:guid}")]
-        public async Task<IActionResult> DeleteUserCard(string username, Guid cardId)
+        [HttpDelete("{userName}/cards/{cardId:guid}")]
+        public async Task<IActionResult> DeleteUserCard(string userName, Guid cardId)
         {
             var userId = HttpContext.GetUserId();
-            var result = await _identityService.UsernameBelongsToCurrentUser(username, userId);
+            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
             if (!result.Succeed) return BadRequest(result.Errors);
 
             bool succeed = await _cardRepository.DeleteCardByIdAsync(cardId);
