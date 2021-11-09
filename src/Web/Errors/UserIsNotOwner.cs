@@ -1,7 +1,14 @@
 namespace Web.Errors
 {
-    public struct UserIsNotOwner : IError
+    public readonly struct UserIsNotOwner : IError
     {
-        public string Message => "User is not the owner of the requested resource.";
+        private const string ErrorTemplate = "User does not own the requested {0}.";
+
+        public UserIsNotOwner(string resource)
+        {
+            Message = string.Format(ErrorTemplate, resource);
+        }
+
+        public string Message { get; }
     }
 }
