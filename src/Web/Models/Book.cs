@@ -11,8 +11,9 @@ namespace Web.Models
         public string Synopsis { get; set; }
         public decimal UnitPrice { get; set; }
         public int CopiesSold { get; set; }
-        public int YearPublished { get; set; }
+        public DateTime PublicationDate { get; set; }
         public string Publisher { get; set; }
+        public decimal Rating { get; set; }
 
         public string GenreName { get; set; }
         public Genre Genre { get; set; }

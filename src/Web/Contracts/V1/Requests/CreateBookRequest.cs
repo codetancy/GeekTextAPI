@@ -10,9 +10,10 @@ namespace Web.Contracts.V1.Requests
         public string Synopsis { get; init; }
         public decimal UnitPrice { get; init; }
         public int CopiesSold { get; init; }
-        public int YearPublished { get; init; }
-        public string GenreName { get; init; }
+        public string PublicationDate { get; init; }
+        public string Genre { get; init; }
         public string Publisher { get; init; }
+        public decimal Rating { get; init; }
         public List<Guid> AuthorsIds { get; init; }
     }
 

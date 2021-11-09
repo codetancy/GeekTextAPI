@@ -27,11 +27,28 @@ namespace Web.Data.Configuration
                 .HasPrecision(6, 2)
                 .IsRequired();
 
-            builder.Property(book => book.YearPublished)
+            builder.Property(book => book.CopiesSold)
+                .HasDefaultValue(0)
+                .IsRequired();
+
+            builder.Property(book => book.PublicationDate)
                 .IsRequired();
 
             builder.Property(book => book.Publisher)
                 .HasMaxLength(64);
+
+            builder.Property(book => book.Rating)
+                .HasDefaultValue(0.0m)
+                .HasPrecision(2, 1)
+                .IsRequired();
+
+            // Indexes
+            builder.HasIndex(book => book.Isbn);
+            builder.HasIndex(book => book.CopiesSold);
+
+            // Constrains
+            builder.HasCheckConstraint("CK_Books_Rating"
+                , $"0.0 <= [{nameof(Book.Rating)}] AND [{nameof(Book.Rating)}] <= 5.0");
 
             // Relationships
             builder.HasOne(book => book.Genre)
