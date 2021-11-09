@@ -62,34 +62,28 @@ namespace Web.Repositories.SqlServer
 
         public async Task<Book> GetBookByIsbnAsync(string bookIsbn)
         {
+            if (bookIsbn is null)
+                throw new ArgumentNullException(nameof(bookIsbn));
+
             return await _dbContext.Books.SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
-        public async Task<bool> CreateBookAsync(Book book, List<Guid> authorsIds = null)
+        public async Task<bool> CreateBookAsync(Book book, List<Guid> authorsIds)
         {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            if (book is null)
+                throw new ArgumentNullException(nameof(book));
 
-            try
+            await _dbContext.Books.AddAsync(book);
+
+            if (authorsIds?.Any() ?? false)
             {
-                await _dbContext.Books.AddAsync(book);
-                await _dbContext.SaveChangesAsync();
-
-                if (authorsIds?.Any() ?? false)
-                {
-                    book.BookAuthors =
-                        authorsIds.Select(authorId => new BookAuthor {BookId = book.Id, AuthorId = authorId}).ToList();
-                    await _dbContext.SaveChangesAsync();
-                }
-
-                await transaction.CommitAsync();
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync();
-                return false;
+                await _dbContext.BookAuthors.AddRangeAsync(
+                    authorsIds.Select(authorId => new BookAuthor {BookId = book.Id, AuthorId = authorId})
+                );
             }
 
-            return true;
+            int changed = await _dbContext.SaveChangesAsync();
+            return changed > 0;
         }
 
         public Task<bool> UpdateBookAsync(Book book) => throw new NotImplementedException();
