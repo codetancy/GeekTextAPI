@@ -49,9 +49,12 @@ namespace Web.Repositories.SqlServer
                 .ToListAsync();
         }
 
-        public async Task<List<Book>> GetTopSellersAsync()
+        public async Task<List<Book>> GetTopSellersAsync(int range = 10)
         {
-            return await _dbContext.Books.OrderByDescending(book => book.CopiesSold).Take(10).ToListAsync();
+            return await _dbContext.Books.AsNoTracking()
+                .OrderByDescending(book => book.CopiesSold)
+                .Take(range)
+                .ToListAsync();
         }
 
         public async Task<Book> GetBookByIdAsync(Guid bookId)
@@ -65,7 +68,8 @@ namespace Web.Repositories.SqlServer
             if (bookIsbn is null)
                 throw new ArgumentNullException(nameof(bookIsbn));
 
-            return await _dbContext.Books.SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
+            return await _dbContext.Books.Include(book => book.Authors)
+                .SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
         public async Task<bool> CreateBookAsync(Book book, List<Guid> authorsIds)
@@ -90,7 +94,7 @@ namespace Web.Repositories.SqlServer
 
         public async Task<bool> DeleteBookAsync(Guid bookId)
         {
-            var bookToDelete = await GetBookByIdAsync(bookId);
+            var bookToDelete = await _dbContext.Books.SingleOrDefaultAsync(book => book.Id == bookId);
             if (bookToDelete == null) return false;
 
             _dbContext.Books.Remove(bookToDelete);
