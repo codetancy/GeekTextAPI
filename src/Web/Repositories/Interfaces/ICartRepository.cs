@@ -9,7 +9,8 @@ namespace Web.Repositories.Interfaces
     {
         Task<Cart> GetCartByUserIdAsync(Guid userId);
         Task<bool> CreateCartForUserAsync(Guid userId, Cart cart);
-        Task<Cart> AddBookToCart(Guid cartId, Guid bookId, int quantity = 1);
-        Task<Cart> RemoveBookFromCart(Guid cartId, Guid bookId);
+        Task<bool> AddBookToCartAsync(Guid cartId, Guid bookId, int quantity = 1);
+        Task<bool> UpdateBookInCartAsync(Guid cartId, Guid bookId, int quantity);
+        Task<bool> RemoveBookFromCartAsync(Guid cartId, Guid bookId);
     }
 }

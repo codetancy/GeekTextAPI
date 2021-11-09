@@ -54,25 +54,36 @@ namespace Web.Controllers.V1
         [HttpPost("books")]
         public async Task<IActionResult> AddBookToCart([FromBody] AddBookToCartRequest request)
         {
-            (Guid bookId, Guid cartId, int quantity) = request;
-            var cart = await _cartRepository.AddBookToCart(cartId, bookId, quantity);
+            bool added = await _cartRepository.AddBookToCartAsync(
+                request.CartId, request.BookId, request.Quantity
+            );
+            if (!added) return BadRequest($"Unable to add book to cart.");
 
-            if (cart is null) return NotFound($"Book with ID {bookId} does not exist.");
+            return Ok();
+        }
 
-            var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return Ok(mapping.ToSingleResponse());
+        [HttpPut("books/{bookId:guid}")]
+        public async Task<IActionResult> UpdateBookInCart(
+            [FromRoute] Guid bookId, [FromBody] UpdateBookInCartRequest request)
+        {
+            bool updated = await _cartRepository.UpdateBookInCartAsync(
+                request.CartId, bookId, request.Quantity
+            );
+            if (!updated) return BadRequest("Unable to update book in cart");
+
+            return Ok();
         }
 
         [HttpDelete("books/{bookId:guid}")]
         public async Task<IActionResult> RemoveBookFromCart(
             [FromRoute] Guid bookId, [FromBody] RemoveBookFromCartRequest request)
         {
-            var cart = await _cartRepository.RemoveBookFromCart(request.CartId, bookId);
+            var deleted = await _cartRepository.RemoveBookFromCartAsync(
+                request.CartId, bookId
+            );
+            if(deleted) return BadRequest("Unable to delete book from cart");
 
-            if(cart is null) return BadRequest(new {Error = "Unable to delete book from cart"});
-
-            var mapping = _mapper.Map<Cart, CartResponse>(cart);
-            return Ok(mapping.ToSingleResponse());
+            return Ok();
         }
     }
 }

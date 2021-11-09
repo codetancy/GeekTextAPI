@@ -47,47 +47,108 @@ namespace Web.Repositories.SqlServer
             return added > 0;
         }
 
-        public async Task<Cart> AddBookToCart(Guid cartId, Guid bookId, int quantity = 1)
+        private async Task UpdateCartPricesAsync(Guid cartId)
         {
-            var cart = await GetCartById(cartId);
-            if(cart == null) return null;
+            var cart = _dbContext.Carts
+                .Include(c => c.CartBooks)
+                .ThenInclude(cb => cb.Book)
+                .Single(c => c.CartId == cartId);
 
-            var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if(book == null) return null;
-
-            bool cartContainsBook = cart.CartBooks.Any(b => b.BookId == bookId);
-            if(cartContainsBook){
-                var cartBook = cart.CartBooks.Single(cb => cb.BookId == bookId);
-                cartBook.Quantity += quantity;
-            }
-            else {
-                cart.CartBooks.Add(new CartBook {CartId = cartId, BookId = bookId});
+            foreach (var cartBook in cart.CartBooks)
+            {
+                cartBook.Price = cartBook.Quantity * cartBook.Book.UnitPrice;
             }
 
-            _dbContext.Carts.Update(cart);
-            int changed = await _dbContext.SaveChangesAsync();
-
-            return changed > 0 ? cart : null ;
+            cart.Subtotal = cart.CartBooks.Select(cb => cb.Price).Sum();
+            
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Cart> RemoveBookFromCart(Guid cartId, Guid bookId)
+        public async Task<bool> AddBookToCartAsync(Guid cartId, Guid bookId, int quantity = 1)
         {
-            var cart = await GetCartById(cartId);
-            if (cart == null) return null;
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            var book = await _bookRepository.GetBookByIdAsync(bookId);
-            if (book == null) return null;
+            try
+            {
+                var cart = await _dbContext.Carts
+                    .Include(c => c.CartBooks)
+                    .SingleAsync(c => c.CartId == cartId);
 
-            bool cartContainsBook = cart.CartBooks.Any(b => b.BookId == bookId);
-            if (!cartContainsBook) return null;
+                if (cart.CartBooks.Any(cb => cb.BookId == bookId))
+                    throw new Exception();
 
-            var cartBook = cart.CartBooks.Single(cb => cb.BookId == bookId);
-            cart.CartBooks.Remove(cartBook);
+                cart.CartBooks.Add(new CartBook(cartId, bookId){Quantity = quantity});
 
-            _dbContext.Carts.Update(cart);
-            int changed = await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-            return changed > 0 ? cart : null;
+                await UpdateCartPricesAsync(cartId);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> UpdateBookInCartAsync(Guid cartId, Guid bookId, int quantity)
+        {
+            if (quantity == 0)
+                return await RemoveBookFromCartAsync(cartId, bookId);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var cartBook = await _dbContext.CartBooks
+                    .Where(cb => cb.CartId == cartId && cb.BookId == bookId)
+                    .SingleOrDefaultAsync();
+                
+                cartBook.Quantity = quantity;
+
+                await _dbContext.SaveChangesAsync();
+
+                await UpdateCartPricesAsync(cartId);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> RemoveBookFromCartAsync(Guid cartId, Guid bookId)
+        {
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var cartBook = await _dbContext.CartBooks
+                    .Where(cb => cb.CartId == cartId && cb.BookId == bookId)
+                    .SingleOrDefaultAsync();
+                
+                _dbContext.CartBooks.Remove(cartBook);
+
+                await _dbContext.SaveChangesAsync();
+
+                await UpdateCartPricesAsync(cartId);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+
+            return true;
         }
     }
 }
