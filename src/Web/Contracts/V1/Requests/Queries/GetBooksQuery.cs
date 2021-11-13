@@ -3,5 +3,6 @@
     public class GetBooksQuery : PaginationQuery
     {
         public string GenreName { get; init; }
+        public int? RatingGtEq { get; init; }
     }
 }

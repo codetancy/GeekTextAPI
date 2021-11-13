@@ -38,6 +38,9 @@ namespace Web.Repositories.SqlServer
             if (!string.IsNullOrEmpty(filter.GenreName))
                 query = query.Where(book => book.GenreName == filter.GenreName);
 
+            if (filter.RatingGtEq is not null)
+                query = query.Where(book => book.Rating >= filter.RatingGtEq);
+
             int skipSize = (filter.PageNumber - 1) * filter.PageSize;
             return await query
                 .OrderBy(book => book.Title)
