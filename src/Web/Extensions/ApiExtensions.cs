@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Web.Errors;
 
 namespace Web.Extensions
 {
@@ -11,5 +13,12 @@ namespace Web.Extensions
             string potentialId = httpContext.User.Claims.SingleOrDefault(claim => claim.Type == "Id")?.Value;
             return Guid.TryParse(potentialId, out Guid userId) ? userId : Guid.Empty;
         }
+
+        public static IActionResult GetResultFromError(this IError error) =>
+            error.StatusCode switch
+            {
+                StatusCodes.Status404NotFound => new NotFoundObjectResult(error),
+                _ => new BadRequestObjectResult(error)
+            };
     }
 }
