@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Web.Constants;
 using Web.Contracts.V1.Requests;
 using Web.Extensions;
 using Web.Services.Interfaces;
@@ -8,6 +10,7 @@ namespace Web.Controllers.V1
 {
     [ApiController]
     [Route("api/v1/roles")]
+    [Authorize(Roles = RoleNames.Admin)]
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -60,10 +63,10 @@ namespace Web.Controllers.V1
         /// <summary>
         /// Assigns a role to a user by its user name.
         /// </summary>
-        /// <param name="request">Object containing the user's user name</param>
+        /// <param name="request">Object with the user's user name</param>
         /// <param name="roleName">Name of the role to assign</param>
         /// <response code="200">Successful operations</response>
-        /// <response code="400">Invalid user name or role name</response>
+        /// <response code="400">User is already in role</response>
         /// <response code="404">User or role not found</response>
         [HttpPost("{roleName}/users")]
         public async Task<IActionResult> AddUserToRole(
@@ -76,10 +79,10 @@ namespace Web.Controllers.V1
         /// <summary>
         /// Removes a role from a user.
         /// </summary>
-        /// <param name="roleName">User's user name</param>
-        /// <param name="userName">Name of the role to assign</param>
+        /// <param name="roleName">Name of the role to assign</param>
+        /// <param name="userName">User user name</param>
         /// <response code="200">Successful operation</response>
-        /// <response code="400">Invalid user name or role name</response>
+        /// <response code="400">User is not in role</response>
         /// <response code="404">User or role not found</response>
         /// <returns></returns>
         [HttpDelete("{roleName}/users/{userName}")]
