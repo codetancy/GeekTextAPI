@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Web.Contracts.V1.Responses
 {
-    public class ListedResponse<T> where T : Response
+    public class ListedResponse<T>
     {
         public IEnumerable<T> Data { get; init; }
 

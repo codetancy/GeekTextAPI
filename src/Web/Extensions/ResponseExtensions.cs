@@ -10,7 +10,7 @@ namespace Web.Extensions
         public static SingleResponse<T> ToSingleResponse<T>(this T response) where T : Response
             => new SingleResponse<T>(response);
 
-        public static ListedResponse<T> ToListedResponse<T>(this IEnumerable<T> response) where T : Response
+        public static ListedResponse<T> ToListedResponse<T>(this IEnumerable<T> response)
             => new ListedResponse<T>(response);
 
         public static PagedResponse<T> ToPagedResponse<T>(this IEnumerable<T> response,
