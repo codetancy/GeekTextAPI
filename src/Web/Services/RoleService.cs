@@ -59,6 +59,9 @@ namespace Web.Services
             bool roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists) return new Result(new RoleDoesNotExist(roleName));
 
+            bool hasRole = await _userManager.IsInRoleAsync(user, roleName);
+            if (hasRole) return new Result(new UserIsAlreadyInRole(userName, roleName));
+
             var result = await _userManager.AddToRoleAsync(user, roleName);
 
             return result.Succeeded
@@ -73,6 +76,9 @@ namespace Web.Services
 
             bool roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists) return new Result(new RoleDoesNotExist(roleName));
+
+            bool hasRole = await _userManager.IsInRoleAsync(user, roleName);
+            if (!hasRole) return new Result(new UserIsNotInRole(userName, roleName));
 
             var result = await _userManager.RemoveFromRoleAsync(user, roleName);
 
