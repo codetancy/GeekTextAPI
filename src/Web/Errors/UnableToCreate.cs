@@ -1,10 +1,10 @@
 namespace Web.Errors
 {
-    public readonly struct UserIsNotOwner : IError
+    public struct UnableToCreate : IError
     {
-        private const string ErrorTemplate = "User does not own the requested {0}.";
+        private const string ErrorTemplate = "Unable to create {0}. Please try again.";
 
-        public UserIsNotOwner(string resource)
+        public UnableToCreate(string resource)
         {
             Message = string.Format(ErrorTemplate, resource);
         }

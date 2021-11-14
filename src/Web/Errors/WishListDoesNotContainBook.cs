@@ -12,5 +12,6 @@ namespace Web.Errors
         }
 
         public string Message { get; }
+        public int StatusCode => 400;
     }
 }
