@@ -1,7 +1,7 @@
 namespace Web.Constants
 {
-    public static class WishListConstants
+    public readonly struct WishListConstants
     {
-        public static int MaxWishListsPerUser => 3;
+        public const int MaxWishListsPerUser = 3;
     }
 }
