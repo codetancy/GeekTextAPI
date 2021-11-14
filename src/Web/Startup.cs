@@ -62,6 +62,7 @@ namespace Web
             services.AddScoped<ICardRepository, SqlServerCardRepository>();
             services.AddScoped<IGenreRepository, SqlServerGenreRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IRoleService, RoleService>();
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
