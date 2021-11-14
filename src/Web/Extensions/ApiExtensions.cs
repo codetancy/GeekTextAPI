@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Web.Constants;
 using Web.Errors;
 
 namespace Web.Extensions
@@ -10,7 +11,8 @@ namespace Web.Extensions
     {
         public static Guid GetUserId(this HttpContext httpContext)
         {
-            string potentialId = httpContext.User.Claims.SingleOrDefault(claim => claim.Type == "Id")?.Value;
+            string potentialId = httpContext.User.Claims
+                .SingleOrDefault(claim => claim.Type == ClaimsNames.Id)?.Value;
             return Guid.TryParse(potentialId, out Guid userId) ? userId : Guid.Empty;
         }
 
