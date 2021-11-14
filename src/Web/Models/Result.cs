@@ -3,20 +3,14 @@ using Web.Errors;
 
 namespace Web.Models
 {
-    public class Result
+    public readonly struct Result
     {
         private readonly bool _success;
         private readonly IError _error;
 
-        public Result()
+        public Result(IError error = null)
         {
-            _success = true;
-            _error = null;
-        }
-
-        public Result(IError error)
-        {
-            _success = false;
+            _success = error is null;
             _error = error;
         }
 
