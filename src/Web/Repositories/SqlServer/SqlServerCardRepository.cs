@@ -63,14 +63,17 @@ namespace Web.Repositories.SqlServer
                 : new Result(new UnableToCreate(nameof(Card)));
         }
 
-        public async Task<bool> DeleteCardByIdAsync(Guid paymentId)
+        public async Task<Result> DeleteCardByIdAsync(Guid paymentId)
         {
             var card = await _dbContext.Cards.SingleOrDefaultAsync(p => p.Id == paymentId);
-            if (card is null) return false;
+            if (card is null) return new Result(new PaymentDoesNotExist(paymentId));
 
             _dbContext.Cards.Remove(card);
             int deleted = await _dbContext.SaveChangesAsync();
-            return deleted > 0;
+
+            return deleted > 0
+                ? new Result(null)
+                : new Result(new UnableToDelete(nameof(Card)));
         }
     }
 }

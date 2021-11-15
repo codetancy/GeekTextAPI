@@ -96,13 +96,13 @@ namespace Web.Controllers.V1
         [HttpDelete("{userName}/cards/{cardId:guid}")]
         public async Task<IActionResult> DeleteUserCard(string userName, Guid cardId)
         {
-            var userId = HttpContext.GetUserId();
-            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
-            if (!result.Succeed) return BadRequest(result.Errors);
+            string claimUser = HttpContext.GetUserName();
+            if (!userName.Equals(claimUser, StringComparison.OrdinalIgnoreCase))
+                return Unauthorized(new UserDoesNotOwnResource(claimUser));
 
-            bool succeed = await _cardRepository.DeleteCardByIdAsync(cardId);
-            if (!succeed) return BadRequest(new {Error = "Unable to delete card."});
-            return NoContent();
+            var result = await _cardRepository.DeleteCardByIdAsync(cardId);
+
+            return result.Match(NoContent, error => error.GetResultFromError());
         }
     }
 }
