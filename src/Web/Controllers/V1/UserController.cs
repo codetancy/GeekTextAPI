@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
-using Web.Data.Identities;
 using Web.Errors;
 using Web.Extensions;
 using Web.Models;
@@ -22,18 +21,15 @@ namespace Web.Controllers.V1
     {
         private readonly ICardRepository _cardRepository;
         private readonly IUserService _userService;
-        private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
 
         public UserController(
             ICardRepository cardRepository,
             IUserService userService,
-            IIdentityService identityService,
             IMapper mapper)
         {
             _cardRepository = cardRepository;
             _userService = userService;
-            _identityService = identityService;
             _mapper = mapper;
         }
 
