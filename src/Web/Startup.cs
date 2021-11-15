@@ -65,6 +65,7 @@ namespace Web
             services.AddScoped<IGenreRepository, SqlServerGenreRepository>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
