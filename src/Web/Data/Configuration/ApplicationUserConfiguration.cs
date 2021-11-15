@@ -19,6 +19,14 @@ namespace Web.Data.Configuration
                 .HasForeignKey(userRole => userRole.UserId)
                 .IsRequired();
 
+            builder.HasMany(user => user.Roles)
+                .WithMany(roles => roles.Users)
+                .UsingEntity<ApplicationUserRole>(
+                    j => j.HasOne(ur => ur.Role).WithMany(r => r.UserRoles)
+                        .OnDelete(DeleteBehavior.Restrict),
+                    j => j.HasOne(ur => ur.User).WithMany(u => u.UserRoles)
+                        .OnDelete(DeleteBehavior.Cascade));
+
             builder.HasMany(user => user.Payments)
                 .WithOne()
                 .HasForeignKey(payment => payment.UserId);
