@@ -32,8 +32,15 @@ namespace Web.Controllers.V1
         }
 
         // GET api/v1/books?genreName
+        /// <summary>
+        /// Gets a list of books
+        /// </summary>
+        /// <param name="GenreName"><inheritdoc cref="GetBooksQuery.GenreName"/></param>
+        /// <response code="200">List of books</response>
+        /// <response code="400">Invalid genre name/rating/page number/page size</response>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllBooks([FromQuery] GetBooksQuery query)
+        public async Task<IActionResult> GetBooks([FromQuery] GetBooksQuery query)
         {
             var filter = _mapper.Map<GetBooksQuery, BookSearchFilter>(query);
             var books = await _bookRepository.GetBooksAsync(filter);
@@ -43,6 +50,12 @@ namespace Web.Controllers.V1
         }
 
         // GET api/v1/books/best-selling
+        /// <summary>
+        /// Returns a list of the best selling books.
+        /// </summary>
+        /// <response code="200">List returned successfully</response>
+        /// <response code="400">Could not return the list of the best selling books</response>
+        /// <returns></returns>
         [HttpGet("best-sellers")]
         public async Task<IActionResult> GetTopSellers()
         {
@@ -52,6 +65,12 @@ namespace Web.Controllers.V1
         }
 
         // GET ap1/v1/books/{bookId}
+        /// <summary>
+        /// Gets books by their ID.
+        /// </summary>
+        /// <response code="200">Returned book successfully</response>
+        /// <response code="400">Unable to return a book with the given ISBN code</response>
+        /// <returns></returns>
         [HttpGet("{bookId:guid}")]
         public async Task<IActionResult> GetBookById([FromRoute] Guid bookId)
         {
@@ -63,6 +82,12 @@ namespace Web.Controllers.V1
         }
 
         // POST api/v1/books
+        /// <summary>
+        /// Creates a book entry.
+        /// </summary>
+        /// <response code="200">Successfully creates a book entry</response>
+        /// <response code="400">Unable to create book entry</response>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookRequest request)
         {
@@ -90,6 +115,12 @@ namespace Web.Controllers.V1
         }
 
         // DELETE api/v1/books/{bookId}
+        /// <summary>
+        /// Deletes a book entry.
+        /// </summary>
+        /// <response code="200">Book entry removal sucessful</response>
+        /// <response code="400">Unable to remove book entry</response>
+        /// <returns></returns>
         [HttpDelete("{bookId:guid}")]
         public async Task<IActionResult> RemoveBook([FromRoute] Guid bookId)
         {
@@ -102,6 +133,12 @@ namespace Web.Controllers.V1
         }
 
         // PUT api/v1/books/{bookId}
+        /// <summary>
+        /// Deletes a book entry.
+        /// </summary>
+        /// <response code="200">Book entry update sucessful</response>
+        /// <response code="400">Unable to update book entry</response>
+        /// <returns></returns>
         [HttpPut("{bookId:guid}")]
         public async Task<IActionResult> UpdateBook([FromBody] UpdateBookRequest request)
         {
