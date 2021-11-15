@@ -21,12 +21,18 @@ namespace Web.Controllers.V1
     public class UserController : ControllerBase
     {
         private readonly ICardRepository _cardRepository;
+        private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
         private readonly IMapper _mapper;
 
-        public UserController(ICardRepository cardRepository, IIdentityService identityService, IMapper mapper)
+        public UserController(
+            ICardRepository cardRepository,
+            IUserService userService,
+            IIdentityService identityService,
+            IMapper mapper)
         {
             _cardRepository = cardRepository;
+            _userService = userService;
             _identityService = identityService;
             _mapper = mapper;
         }
@@ -41,14 +47,10 @@ namespace Web.Controllers.V1
         [AllowAnonymous]
         public async Task<IActionResult> GetUser(string userName)
         {
-            var user = await _identityService.GetUserByNameAsync(userName);
-            if (user is null) return NotFound(new UserDoesNotExist(userName));
-
-            return (user.Id == HttpContext.GetUserId()) switch
-            {
-                true => Ok(_mapper.Map<ApplicationUser, LoggedUserResponse>(user).ToSingleResponse()),
-                false => Ok(_mapper.Map<ApplicationUser, UserReponse>(user).ToSingleResponse())
-            };
+            var result = await _userService.GetUserAsync(userName);
+            return result.Match(
+                res => Ok(_mapper.Map<UserReponse>(res).ToSingleResponse()),
+                err => err.GetResultFromError());
         }
 
         [HttpPut("{userName}")]
