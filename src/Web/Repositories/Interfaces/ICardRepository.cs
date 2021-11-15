@@ -9,7 +9,7 @@ namespace Web.Repositories.Interfaces
     {
         Task<Card> GetCardByIdAsync(Guid paymentId);
         Task<Result<List<Card>>> GetUserCardsAsync(Guid userId);
-        Task<bool> CreateCardAsync(Card card);
+        Task<Result> CreateCardAsync(Card card);
         Task<bool> DeleteCardByIdAsync(Guid paymentId);
     }
 }

@@ -82,17 +82,15 @@ namespace Web.Controllers.V1
         [HttpPost("{userName}/cards")]
         public async Task<IActionResult> CreateCard(string userName, [FromBody] CreateCardRequest request)
         {
-            var userId = HttpContext.GetUserId();
-            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
-            if (!result.Succeed) return BadRequest(result.Errors);
+            string claimUser = HttpContext.GetUserName();
+            if (!userName.Equals(claimUser, StringComparison.OrdinalIgnoreCase))
+                return Unauthorized(new UserDoesNotOwnResource(claimUser));
 
-            var card = _mapper.Map<CreateCardRequest, Card>(request);
-            card.UserId = userId;
-            bool success = await _cardRepository.CreateCardAsync(card);
-            if (!success) return BadRequest(new {Error = "Unable to create card."});
-            var mapping = _mapper.Map<Card, SimpleCardResponse>(card);
+            var card = _mapper.Map<Card>(request);
+            card.UserId = HttpContext.GetUserId();
+            var result = await _cardRepository.CreateCardAsync(card);
 
-            return CreatedAtAction(nameof(GetUserCards), new { userName = userName }, mapping.ToSingleResponse());
+            return result.Match(Ok, error => error.GetResultFromError());
         }
 
         [HttpDelete("{userName}/cards/{cardId:guid}")]

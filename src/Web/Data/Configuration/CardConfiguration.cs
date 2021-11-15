@@ -20,13 +20,26 @@ namespace Web.Data.Configuration
                 .IsRequired();
 
             builder.Property(card => card.ExpirationMonth)
+                .HasColumnType("char(2)")
                 .IsRequired();
 
             builder.Property(card => card.ExpirationYear)
+                .HasColumnType("char(4)")
                 .IsRequired();
 
             builder.Property(card => card.SecurityCode)
+                .HasColumnType("char(3)")
                 .IsRequired();
+
+            // Constraints
+            builder.HasCheckConstraint("CK_Cards_ExpirationMonth",
+                $"[{nameof(Card.ExpirationMonth)}] LIKE '[0][1-9]' OR [{nameof(Card.ExpirationMonth)}] LIKE '[1][0-2]'");
+
+            builder.HasCheckConstraint("CK_Cards_ExpirationYear",
+                $"[{nameof(Card.ExpirationYear)}] LIKE '[2]%[0-9]%'");
+
+            builder.HasCheckConstraint("CK_Cards_SecurityCode",
+                $"[{nameof(Card.SecurityCode)}] LIKE '%[0-9]%'");
 
             // Relationships
         }

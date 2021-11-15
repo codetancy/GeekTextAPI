@@ -53,11 +53,14 @@ namespace Web.Repositories.SqlServer
             return new Result<List<Card>>(cards);
         }
 
-        public async Task<bool> CreateCardAsync(Card card)
+        public async Task<Result> CreateCardAsync(Card card)
         {
             await _dbContext.Cards.AddAsync(card);
             int added = await _dbContext.SaveChangesAsync();
-            return added > 0;
+
+            return added > 0
+                ? new Result(null)
+                : new Result(new UnableToCreate(nameof(Card)));
         }
 
         public async Task<bool> DeleteCardByIdAsync(Guid paymentId)
