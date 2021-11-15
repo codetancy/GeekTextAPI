@@ -8,7 +8,7 @@ namespace Web.Repositories.Interfaces
     public interface ICardRepository
     {
         Task<Card> GetCardByIdAsync(Guid paymentId);
-        Task<List<Card>> GetUserCardsAsync(Guid userId);
+        Task<Result<List<Card>>> GetUserCardsAsync(Guid userId);
         Task<bool> CreateCardAsync(Card card);
         Task<bool> DeleteCardByIdAsync(Guid paymentId);
     }

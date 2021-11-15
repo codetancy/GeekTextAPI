@@ -62,18 +62,25 @@ namespace Web.Controllers.V1
         [HttpGet("{userName}/cards")]
         public async Task<IActionResult> GetUserCards(string userName)
         {
+            string claimUser = HttpContext.GetUserName();
+            if (!userName.Equals(claimUser, StringComparison.OrdinalIgnoreCase))
+                return Unauthorized(new UserDoesNotOwnResource(claimUser));
+
             var userId = HttpContext.GetUserId();
-            var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);
-            if (!result.Succeed) return BadRequest(result.Errors);
+            var result = await _cardRepository.GetUserCardsAsync(userId);
 
-            var cards = await _cardRepository.GetUserCardsAsync(userId);
-            var mapping = _mapper.Map<List<Card>, UserCardResponse>(cards);
-
-            return Ok(mapping.ToSingleResponse());
+            return result.Match(
+                cards =>
+                {
+                    var mapping = _mapper.Map<List<SimpleCardResponse>>(cards);
+                    var response = new UserCardResponse(userName, mapping);
+                    return Ok(response.ToSingleResponse());
+                },
+                error => error.GetResultFromError());
         }
 
         [HttpPost("{userName}/cards")]
-        public async Task<IActionResult> CreateCard([FromRoute] string userName, [FromBody] CreateCardRequest request)
+        public async Task<IActionResult> CreateCard(string userName, [FromBody] CreateCardRequest request)
         {
             var userId = HttpContext.GetUserId();
             var result = await _identityService.UserNameBelongsToUserAsync(userName, userId);

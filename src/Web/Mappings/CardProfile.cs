@@ -18,14 +18,6 @@ namespace Web.Mappings
                 .ForMember(dest => dest.CardNumber,
                     opts => opts.MapFrom(
                         src => HideCardNumber(src.CardNumber)));
-
-            CreateMap<List<Card>, UserCardResponse>(MemberList.Destination)
-                .ForMember(dest => dest.UserId,
-                    opts => opts.MapFrom(
-                        src => src.First().UserId))
-                .ForMember(dest => dest.Cards,
-                    opts => opts.MapFrom((source, _, _, context) =>
-                        source.Select(card => context.Mapper.Map<Card, SimpleCardResponse>(card))));
         }
 
         private static string HideCardNumber(string cardNumber)
