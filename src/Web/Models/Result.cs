@@ -37,6 +37,6 @@ namespace Web.Models
             _error = error;
         }
 
-        public R Match<R>(Func<T, R> valid, Func<IError, R> fail) => _success ? valid(_value) : fail(_error);
+        public TR Match<TR>(Func<T, TR> valid, Func<IError, TR> fail) => _success ? valid(_value) : fail(_error);
     }
 }
