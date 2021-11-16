@@ -31,7 +31,6 @@ namespace Web.Controllers.V1
             _mapper = mapper;
         }
 
-        // GET api/v1/books?genreName
         /// <summary>
         /// Gets a list of books
         /// </summary>
@@ -49,7 +48,6 @@ namespace Web.Controllers.V1
             return Ok(mapping.ToPagedResponse(_uriService, filter.PageNumber, filter.PageSize));
         }
 
-        // GET api/v1/books/best-selling
         /// <summary>
         /// Returns a list of the best selling books.
         /// </summary>
@@ -64,7 +62,6 @@ namespace Web.Controllers.V1
             return Ok(mapping.ToListedResponse());
         }
 
-        // GET ap1/v1/books/{bookId}
         /// <summary>
         /// Gets books by their ID.
         /// </summary>
@@ -81,11 +78,10 @@ namespace Web.Controllers.V1
             return Ok(mapping.ToSingleResponse());
         }
 
-        // POST api/v1/books
         /// <summary>
         /// Creates a book entry.
         /// </summary>
-        /// <response code="200">Successfully creates a book entry</response>
+        /// <response code="200">Book entry created successfully</response>
         /// <response code="400">Unable to create book entry</response>
         /// <returns></returns>
         [HttpPost]
@@ -114,11 +110,10 @@ namespace Web.Controllers.V1
             return CreatedAtAction(nameof(GetBookById), new { bookId = mapping.Id }, mapping.ToSingleResponse());
         }
 
-        // DELETE api/v1/books/{bookId}
         /// <summary>
         /// Deletes a book entry.
         /// </summary>
-        /// <response code="200">Book entry removal sucessful</response>
+        /// <response code="200">Book entry removed successfully</response>
         /// <response code="400">Unable to remove book entry</response>
         /// <returns></returns>
         [HttpDelete("{bookId:guid}")]
@@ -132,11 +127,10 @@ namespace Web.Controllers.V1
             return NoContent();
         }
 
-        // PUT api/v1/books/{bookId}
         /// <summary>
         /// Deletes a book entry.
         /// </summary>
-        /// <response code="200">Book entry update sucessful</response>
+        /// <response code="200">Book entry updated successfully</response>
         /// <response code="400">Unable to update book entry</response>
         /// <returns></returns>
         [HttpPut("{bookId:guid}")]

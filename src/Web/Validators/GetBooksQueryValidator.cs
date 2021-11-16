@@ -1,3 +1,6 @@
+using FluentValidation;
+using Web.Contracts.V1.Requests.Queries;
+
 namespace Web.Validators
 {
     public class GetBooksQueryValidator : AbstractValidator<GetBooksQuery>
@@ -5,7 +8,7 @@ namespace Web.Validators
         public GetBooksQueryValidator()
         {
             RuleFor(gbq => gbq.RatingGtEq)
-                .GreaterThanOrEqualToZero(0)
+                .GreaterThanOrEqualTo(0)
                 .LessThanOrEqualTo(5);
         }
     }
