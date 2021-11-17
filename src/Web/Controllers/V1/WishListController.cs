@@ -22,7 +22,10 @@ namespace Web.Controllers.V1
         private readonly IMapper _mapper;
         private readonly IBookRepository _bookRepository;
 
-        public WishListController(IWishListRepository wishListRepository, IBookRepository bookRepository, IMapper mapper)
+        public WishListController(
+            IWishListRepository wishListRepository,
+            IBookRepository bookRepository,
+            IMapper mapper)
         {
             _wishListRepository = wishListRepository;
             _mapper = mapper;
@@ -59,7 +62,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
             var userId = HttpContext.GetUserId();
-            (string wishListName, string description, _) = request;
+            (string wishListName, string description) = request;
 
             bool exists = await _wishListRepository.WishListExists(wishListName);
             if (exists) return BadRequest(new {Error = $"Wishlist {wishListName} already exists."});
@@ -124,28 +127,22 @@ namespace Web.Controllers.V1
         /// <remarks>This can only be done by the logged in user</remarks>
         /// <param name="wishListName">Name of the wishlist to modify</param>
         /// <param name="bookId">Id of the book to remove</param>
-        /// <param name="request">Additional request parameters</param>
-        /// <seealso cref="RemoveBookFromWishListRequest"/>
+        /// <param name="cartId">Adds the removed book to the cart (Optional)</param>
         /// <response code="200">Successful operation</response>
         /// <response code="400">Invalid wishlist/book supplied</response>
         /// <response code="401">User does not own resource</response>
         /// <response code="404">Wishlist or book not found</response>
         [HttpDelete("{wishListName}/books/{bookId:guid}")]
         public async Task<IActionResult> RemoveBookFromWishList(
-            [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromBody] RemoveBookFromWishListRequest request)
+            [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromQuery] Guid cartId)
         {
             var userId = HttpContext.GetUserId();
+            bool ownsWishList = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!ownsWishList) return Unauthorized(new UserIsNotOwner(nameof(WishList)));
 
-            bool exists = await _wishListRepository.WishListExists(wishListName);
-            if (!exists) return NotFound(new WishListDoesNotExist(wishListName));
+            // Todo: Check if user owns the target cart.
 
-            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
-            if (!isOwner) return Unauthorized(new UserIsNotOwner(nameof(WishList)));
-
-            bool bookExists = await _bookRepository.BookExistsAsync(bookId);
-            if (!bookExists) return NotFound(new BookDoesNotExist(bookId));
-
-            var result = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId);
+            var result = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId, cartId);
             return result.Match(Ok, error => error.GetResultFromError());
         }
     }

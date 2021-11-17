@@ -14,10 +14,12 @@ namespace Web.Repositories.SqlServer
     public class SqlServerWishListRepository : IWishListRepository
     {
         private readonly AppDbContext _dbContext;
+        private readonly ICartRepository _cartRepository;
 
-        public SqlServerWishListRepository(AppDbContext dbContext)
+        public SqlServerWishListRepository(AppDbContext dbContext, ICartRepository cartRepository)
         {
             _dbContext = dbContext;
+            _cartRepository = cartRepository;
         }
 
         public async Task<bool> WishListExists(string wishListName)
@@ -97,22 +99,30 @@ namespace Web.Repositories.SqlServer
 
         }
 
-        public async Task<Result> RemoveBookFromWishListAsync(string wishListName, Guid bookId)
+        public async Task<Result> RemoveBookFromWishListAsync(string wishListName, Guid bookId, Guid cartId)
         {
-            var wishList = await GetWishListByNameAsync(wishListName);
-            if (wishList is null) return new Result(new WishListDoesNotExist(wishListName));
+            bool wishListExists = await _dbContext.WishLists.AsNoTracking().AnyAsync(w => w.Name == wishListName);
+            if (!wishListExists) return new Result(new WishListDoesNotExist(wishListName));
 
-            bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
-            if (!wishListContainsBook) return new Result(new WishListDoesNotContainBook(wishListName, bookId));
+            bool bookExists = await _dbContext.Books.AsNoTracking().AnyAsync(b => b.Id == bookId);
+            if (!bookExists) return new Result(new BookDoesNotExist(bookId));
 
-            var bookToRemove = wishList.WishListBooks.Single(wb => wb.BookId == bookId);
-            wishList.WishListBooks.Remove(bookToRemove);
-            _dbContext.WishLists.Update(wishList);
+            var wishListBook = await _dbContext.WishListBooks.SingleOrDefaultAsync(
+                wb => wb.WishListName == wishListName && wb.BookId == bookId);
+            if (wishListBook is null) return new Result(new WishListDoesNotContainBook(wishListName, bookId));
+
+            if (cartId != Guid.Empty)
+            {
+                var result = await _cartRepository.AddBookToCartAsync(cartId, bookId);
+                var error = result.Match(() => null, error => error);
+                if (error is not null) return new Result(error);
+            }
+
+            _dbContext.WishListBooks.Remove(wishListBook);
             int changes = await _dbContext.SaveChangesAsync();
-
             return changes > 0
                 ? new Result(null)
-                : new Result(new UnableToDelete());
+                : new Result(new UnableToRemoveBookFromWishList(wishListName, bookId));
         }
     }
 }
