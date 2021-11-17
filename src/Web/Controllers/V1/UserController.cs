@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
+using Web.Data.Identities;
 using Web.Errors;
 using Web.Extensions;
 using Web.Models;
@@ -50,9 +51,17 @@ namespace Web.Controllers.V1
         }
 
         [HttpPut("{userName}")]
-        public async Task<IActionResult> UpdateUser()
+        public async Task<IActionResult> UpdateUser(string userName, UpdateUserRequest request)
         {
-            return await Task.FromResult(Ok());
+            string claimUser = HttpContext.GetUserName();
+            if (!userName.Equals(claimUser, StringComparison.OrdinalIgnoreCase))
+                return Unauthorized(new UserDoesNotOwnResource(claimUser));
+
+            var updatedUser = _mapper.Map<ApplicationUser>(request);
+            var result = await _userService.UpdateUserAsync(userName, updatedUser);
+            return result.Match(
+                token => Ok(new AuthSucceedResponse(token).ToSingleResponse()),
+                err => err.GetResultFromError());
         }
 
         [HttpGet("{userName}/cards")]
