@@ -6,6 +6,7 @@ namespace Web.Contracts.V1.Responses
     {
         public string UserName { get; init; }
         public string Email { get; init; }
+        public string PhoneNumber { get; init; }
         public List<string> Roles { get; init; }
     }
 }
