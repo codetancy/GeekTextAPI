@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
@@ -146,10 +145,8 @@ namespace Web.Controllers.V1
             bool bookExists = await _bookRepository.BookExistsAsync(bookId);
             if (!bookExists) return NotFound(new BookDoesNotExist(bookId));
 
-            bool removed = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId);
-            if (!removed) return BadRequest(new UnableToDelete(nameof(Book)));
-
-            return Ok();
+            var result = await _wishListRepository.RemoveBookFromWishListAsync(wishListName, bookId);
+            return result.Match(Ok, error => error.GetResultFromError());
         }
     }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Web.Constants;
 using Web.Data;
+using Web.Errors;
 using Web.Models;
 using Web.Repositories.Interfaces;
 
@@ -96,22 +97,22 @@ namespace Web.Repositories.SqlServer
 
         }
 
-        public async Task<bool> RemoveBookFromWishListAsync(string wishListName, Guid bookId)
+        public async Task<Result> RemoveBookFromWishListAsync(string wishListName, Guid bookId)
         {
             var wishList = await GetWishListByNameAsync(wishListName);
-            if (wishList is null)
-                return false;
+            if (wishList is null) return new Result(new WishListDoesNotExist(wishListName));
 
             bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
-            if (wishListContainsBook)
-            {
-                var bookToRemove = wishList.WishListBooks.Single(wb => wb.BookId == bookId);
-                wishList.WishListBooks.Remove(bookToRemove);
-            }
+            if (!wishListContainsBook) return new Result(new WishListDoesNotContainBook(wishListName, bookId));
 
+            var bookToRemove = wishList.WishListBooks.Single(wb => wb.BookId == bookId);
+            wishList.WishListBooks.Remove(bookToRemove);
             _dbContext.WishLists.Update(wishList);
             int changes = await _dbContext.SaveChangesAsync();
-            return changes > 0;
+
+            return changes > 0
+                ? new Result(null)
+                : new Result(new UnableToDelete());
         }
     }
 }
