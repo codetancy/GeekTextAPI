@@ -54,12 +54,10 @@ namespace Web.Controllers.V1
         [HttpPost("books")]
         public async Task<IActionResult> AddBookToCart([FromBody] AddBookToCartRequest request)
         {
-            bool added = await _cartRepository.AddBookToCartAsync(
+            var result = await _cartRepository.AddBookToCartAsync(
                 request.CartId, request.BookId, request.Quantity
             );
-            if (!added) return BadRequest($"Unable to add book to cart.");
-
-            return Ok();
+            return result.Match(Ok, error => error.GetResultFromError());
         }
 
         [HttpPut("books/{bookId:guid}")]
