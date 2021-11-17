@@ -9,5 +9,6 @@ namespace Web.Services.Interfaces
     {
         Task<Result<ApplicationUser>> GetUserAsync(Guid userId);
         Task<Result<ApplicationUser>> GetUserAsync(string userName);
+        Task<Result<string>> UpdateUserAsync(string userName, ApplicationUser updatedUser);
     }
 }
