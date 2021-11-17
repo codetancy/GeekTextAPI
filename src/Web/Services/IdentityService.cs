@@ -105,31 +105,5 @@ namespace Web.Services
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             return jwtTokenHandler.WriteToken(token);;
         }
-
-        public async Task<AuthenticationResult> UserNameBelongsToUserAsync(string username, Guid userId)
-        {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user is null)
-                return new AuthenticationResult {Succeed = false, Errors = new[] {$"No user with username {username}"}};
-
-            return user.Id == userId
-                ? new AuthenticationResult {Succeed = true}
-                : new AuthenticationResult {Succeed = false, Errors = new[] {$"You are not {username}"}};
-        }
-
-        public async Task<ApplicationUser> GetUserByIdAsync(Guid userId)
-        {
-            return await _userManager.FindByIdAsync(userId.ToString());
-        }
-
-        public async Task<ApplicationUser> GetUserByNameAsync(string userName)
-        {
-            return await _userManager.FindByNameAsync(userName);
-        }
-
-        public async Task<IdentityResult> UpdateUserAsync(ApplicationUser user)
-        {
-            return await _userManager.UpdateAsync(user);
-        }
     }
 }
