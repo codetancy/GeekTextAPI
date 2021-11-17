@@ -9,6 +9,7 @@ namespace Web.Services.Interfaces
     {
         Task<AuthenticationResult> LoginAsync(string input, string password);
         Task<AuthenticationResult> SignupAsync(string email, string userName, string password);
+        Task<string> GenerateJwtToken(ApplicationUser user);
         Task<AuthenticationResult> UserNameBelongsToUserAsync(string username, Guid userId);
         Task<ApplicationUser> GetUserByNameAsync(string username);
     }

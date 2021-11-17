@@ -87,7 +87,7 @@ namespace Web.Services
             return claims;
         }
 
-        private async Task<string> GenerateJwtToken(ApplicationUser user)
+        public async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.ASCII.GetBytes(_jwtOptions.Secret);
