@@ -79,7 +79,7 @@ namespace Web.Controllers.V1
             var deleted = await _cartRepository.RemoveBookFromCartAsync(
                 request.CartId, bookId
             );
-            if(deleted) return BadRequest("Unable to delete book from cart");
+            if(!deleted) return BadRequest("Unable to delete book from cart");
 
             return Ok();
         }
