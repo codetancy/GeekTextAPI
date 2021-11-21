@@ -128,7 +128,7 @@ namespace Web.Controllers.V1
         }
 
         /// <summary>
-        /// Deletes a book entry.
+        /// Updates a book entry.
         /// </summary>
         /// <response code="200">Book entry updated successfully</response>
         /// <response code="400">Unable to update book entry</response>
