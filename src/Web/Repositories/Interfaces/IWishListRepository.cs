@@ -14,7 +14,7 @@ namespace Web.Repositories.Interfaces
         Task<WishList> GetWishListByNameAsync(string wishListName);
         Task<bool> CreateWishListAsync(WishList wishList);
         Task<bool> DeleteWishListAsync(string wishListName);
-        Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId);
+        Task<Result> AddBookToWishListAsync(string wishListName, Guid bookId);
         Task<Result> RemoveBookFromWishListAsync(string wishListName, Guid bookId, Guid cartId);
     }
 }

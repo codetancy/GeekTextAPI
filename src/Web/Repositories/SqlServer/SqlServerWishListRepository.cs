@@ -80,22 +80,24 @@ namespace Web.Repositories.SqlServer
             return deleted > 0;
         }
 
-        public async Task<bool> AddBookToWishListAsync(string wishListName, Guid bookId)
+        public async Task<Result> AddBookToWishListAsync(string wishListName, Guid bookId)
         {
-            var wishList = await GetWishListByNameAsync(wishListName);
-            if (wishList is null)
-                return false;
+            bool wishListExists = await _dbContext.WishLists.AsNoTracking().AnyAsync(w => w.Name == wishListName);
+            if (!wishListExists) return new Result(new WishListDoesNotExist(wishListName));
 
-            bool wishListContainsBook = wishList.WishListBooks.Any(wb => wb.BookId == bookId);
-            if(!wishListContainsBook)
-            {
-                wishList.WishListBooks.Add(new WishListBook(wishListName, bookId));
-            }
+            bool bookExists = await _dbContext.Books.AsNoTracking().AnyAsync(b => b.Id == bookId);
+            if (!bookExists) return new Result(new BookDoesNotExist(bookId));
 
-            _dbContext.WishLists.Update(wishList);
-            int changed = await _dbContext.SaveChangesAsync();
+            bool wishListContainsBook = await _dbContext.WishListBooks
+                .AnyAsync(wb => wb.WishListName == wishListName && wb.BookId == bookId);
+            if (wishListContainsBook) return new Result(new WishListAlreadyContainsBook(wishListName, bookId));
 
-            return changed > 0;
+            await _dbContext.WishListBooks.AddAsync(new WishListBook(wishListName, bookId));
+            int changes = await _dbContext.SaveChangesAsync();
+
+            return changes > 0
+                ? new Result(null)
+                : new Result(new UnableToAddBookToWishList(wishListName, bookId));
 
         }
 

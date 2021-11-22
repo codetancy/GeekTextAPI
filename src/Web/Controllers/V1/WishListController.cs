@@ -95,50 +95,44 @@ namespace Web.Controllers.V1
             return NoContent();
         }
 
-        // POST api/v1/wishlists/{wishListName}/books
+        /// <summary>
+        /// Adds book to wishlist.
+        /// </summary>
+        /// <remarks>Can only be done by logged in user</remarks>
+        /// <param name="wishListName">Target wishlist</param>
+        /// <param name="bookId">Book to add</param>
+        /// <response code="200">Book added to wishlist</response>
+        /// <response code="400">Invalid wishlist/book supplied</response>
+        /// <response code="403">User does not own wishlist</response>
         [HttpPost("{wishListName}/books")]
         public async Task<IActionResult> AddBookToWishList(
-            [FromRoute] string wishListName, [FromBody] AddBookToWishListRequest request)
+            [FromRoute] string wishListName, [FromBody] Guid bookId)
         {
             var userId = HttpContext.GetUserId();
+            bool userOwnsWishList = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!userOwnsWishList) return Forbid();
 
-            bool exists = await _wishListRepository.WishListExists(wishListName);
-            if (!exists)
-                return NotFound(new { Error = $"Wishlist {wishListName} does not exist." });
-
-            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
-            if (!isOwner)
-                return BadRequest(new { Error = "You do not own this wishlist." });
-
-            bool bookExists = await _bookRepository.BookExistsAsync(request.BookId);
-            if (!bookExists)
-                return NotFound(new { Error = $"Book {request.BookId} does not exist." });
-
-            bool added = await _wishListRepository.AddBookToWishListAsync(wishListName, request.BookId);
-            if (!added)
-                return BadRequest(new {Error = "Unable to add book to the wishlist"});
-
-            return NoContent();
+            var result = await _wishListRepository.AddBookToWishListAsync(wishListName, bookId);
+            return result.Match(Ok, error => error.GetResultFromError());
         }
 
         /// <summary>
         /// Removes book from wishlist, either permanently or adds it to the shopping cart.
         /// </summary>
-        /// <remarks>This can only be done by the logged in user</remarks>
-        /// <param name="wishListName">Name of the wishlist to modify</param>
-        /// <param name="bookId">Id of the book to remove</param>
-        /// <param name="cartId">Adds the removed book to the cart (Optional)</param>
+        /// <remarks>Can only be done by logged in user</remarks>
+        /// <param name="wishListName">Target wishlist</param>
+        /// <param name="bookId">Book to remove</param>
+        /// <param name="cartId">Cart to add removed book (Optional)</param>
         /// <response code="200">Successful operation</response>
         /// <response code="400">Invalid wishlist/book supplied</response>
-        /// <response code="401">User does not own resource</response>
-        /// <response code="404">Wishlist or book not found</response>
+        /// <response code="403">User does not own wishlist</response>
         [HttpDelete("{wishListName}/books/{bookId:guid}")]
         public async Task<IActionResult> RemoveBookFromWishList(
             [FromRoute] string wishListName, [FromRoute] Guid bookId, [FromQuery] Guid cartId)
         {
             var userId = HttpContext.GetUserId();
-            bool ownsWishList = await _wishListRepository.UserOwnsWishList(wishListName, userId);
-            if (!ownsWishList) return Unauthorized(new UserIsNotOwner(nameof(WishList)));
+            bool userOwnsWishList = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!userOwnsWishList) return Forbid();
 
             // Todo: Check if user owns the target cart.
 
