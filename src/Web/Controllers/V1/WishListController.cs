@@ -62,7 +62,7 @@ namespace Web.Controllers.V1
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
             var userId = HttpContext.GetUserId();
-            (string wishListName, string description, _) = request;
+            (string wishListName, string description) = request;
 
             bool exists = await _wishListRepository.WishListExists(wishListName);
             if (exists) return BadRequest(new {Error = $"Wishlist {wishListName} already exists."});
