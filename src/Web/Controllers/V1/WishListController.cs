@@ -20,16 +20,13 @@ namespace Web.Controllers.V1
     {
         private readonly IWishListRepository _wishListRepository;
         private readonly IMapper _mapper;
-        private readonly IBookRepository _bookRepository;
 
         public WishListController(
             IWishListRepository wishListRepository,
-            IBookRepository bookRepository,
             IMapper mapper)
         {
             _wishListRepository = wishListRepository;
             _mapper = mapper;
-            _bookRepository = bookRepository;
         }
 
         // GET api/v1/wishlists
@@ -57,24 +54,25 @@ namespace Web.Controllers.V1
             return Ok(mapping.ToSingleResponse());
         }
 
-        // POST api/v1/wishlists
+        /// <summary>
+        /// Creates a wishlist
+        /// </summary>
+        /// <remarks>A user can only have a maximum of three wishlists at the same time</remarks>
+        /// <param name="request"></param>
+        /// <response code="201">Wishlist created successfully</response>
+        /// <response code="400">Wishlist already exists or user has reached maximum number of wishlists</response>
         [HttpPost]
         public async Task<IActionResult> CreateWishList([FromBody] CreateWishListRequest request)
         {
             var userId = HttpContext.GetUserId();
             (string wishListName, string description) = request;
 
-            bool exists = await _wishListRepository.WishListExists(wishListName);
-            if (exists) return BadRequest(new {Error = $"Wishlist {wishListName} already exists."});
-
-            bool exceeds = await _wishListRepository.UserExceedsWishListsLimit(userId);
-            if (exceeds) return BadRequest(new { Error = "You reached the maximum number of wishlists." });
-
             var wishlist = new WishList { Name = wishListName, Description = description, UserId = userId };
-            bool success = await _wishListRepository.CreateWishListAsync(wishlist);
-            if (!success) return BadRequest(new { Error = "Unable to create the wishlist."});
+            var result = await _wishListRepository.CreateWishListAsync(wishlist);
 
-            return CreatedAtAction(nameof(GetWishListByName), new {wishListName = wishlist.Name}, wishlist);
+            return result.Match(
+                () => CreatedAtAction(nameof(GetWishListByName), new {wishListName = wishlist.Name}, wishlist),
+                error => error.GetResultFromError());
         }
 
         /// <summary>

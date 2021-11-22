@@ -60,15 +60,20 @@ namespace Web.Repositories.SqlServer
                 .SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
         }
 
-        public async Task<bool> CreateWishListAsync(WishList wishList)
+        public async Task<Result> CreateWishListAsync(WishList wishList)
         {
+            bool wishListExists = await _dbContext.WishLists.AsNoTracking().AnyAsync();
+            if (wishListExists) return new Result(new WishListAlreadyExists(wishList.Name));
+
             int count = await _dbContext.WishLists.Where(w => w.UserId == wishList.UserId).CountAsync();
-            if (count >= 3) return false;
+            if (count >= 3) return new Result(new UserReachedMaxNumOfWishLists());
 
             await _dbContext.WishLists.AddAsync(wishList);
             int changed = await _dbContext.SaveChangesAsync();
 
-            return changed > 0;
+            return changed > 0
+                ? new Result(null)
+                : new Result(new UnableToCreate(nameof(WishList)));
         }
 
         public async Task<Result> DeleteWishListAsync(string wishListName)
