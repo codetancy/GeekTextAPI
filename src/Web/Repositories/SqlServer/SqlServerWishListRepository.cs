@@ -22,24 +22,12 @@ namespace Web.Repositories.SqlServer
             _cartRepository = cartRepository;
         }
 
-        public async Task<bool> WishListExists(string wishListName)
-        {
-            var wishList = await _dbContext.WishLists.AsNoTracking().SingleOrDefaultAsync(w => w.Name == wishListName);
-            return wishList is not null;
-        }
-
         public async Task<bool> UserOwnsWishList(string wishListName, Guid userId)
         {
             var wishList = await _dbContext.WishLists.AsNoTracking().SingleOrDefaultAsync(w => w.Name == wishListName);
             if (wishList is null) return false;
 
             return wishList.UserId == userId;
-        }
-
-        public async Task<bool> UserExceedsWishListsLimit(Guid userId)
-        {
-            int count = await _dbContext.WishLists.AsNoTracking().Where(w => w.UserId == userId).CountAsync();
-            return count >= WishListConstants.MaxWishListsPerUser;
         }
 
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)

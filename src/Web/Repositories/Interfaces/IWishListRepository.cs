@@ -7,9 +7,7 @@ namespace Web.Repositories.Interfaces
 {
     public interface IWishListRepository
     {
-        Task<bool> WishListExists(string wishListName);
         Task<bool> UserOwnsWishList(string wishListName, Guid userId);
-        Task<bool> UserExceedsWishListsLimit(Guid userId);
         Task<List<WishList>> GetUserWishListsAsync(Guid userId);
         Task<Result<WishList>> GetWishListByNameAsync(string wishListName);
         Task<Result> CreateWishListAsync(WishList wishList);
