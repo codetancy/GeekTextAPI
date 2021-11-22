@@ -29,16 +29,21 @@ namespace Web.Controllers.V1
             _mapper = mapper;
         }
 
-        // GET api/v1/wishlists
+        /// <summary>
+        /// Gets current user wishlists
+        /// </summary>
+        /// <remarks>User must be logged in</remarks>
+        /// <response code="200">User wishlists</response>
         [HttpGet]
         public async Task<IActionResult> GetUserWishLists()
         {
             var userId = HttpContext.GetUserId();
-            if (userId == Guid.Empty) return BadRequest();
-
-            var wishList = await _wishListRepository.GetUserWishListsAsync(userId);
-            var mapping = _mapper.Map<List<WishList>, List<WishListResponse>>(wishList);
-            return Ok(mapping.ToListedResponse());
+            var result = await _wishListRepository.GetUserWishListsAsync(userId);
+            return result.Match(wishLists =>
+            {
+                var mapping = _mapper.Map<List<WishListResponse>>(wishLists);
+                return Ok(mapping.ToListedResponse());
+            }, error => error.GetResultFromError());
         }
 
         /// <summary>
@@ -47,7 +52,6 @@ namespace Web.Controllers.V1
         /// <param name="wishListName">Wishlist to search</param>
         /// <response code="200">Requested wishlist</response>
         /// <response code="404">Wishlist does not exist</response>
-        /// <returns></returns>
         [HttpGet("{wishListName}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetWishListByName([FromRoute] string wishListName)

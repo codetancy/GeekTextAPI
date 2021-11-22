@@ -30,13 +30,15 @@ namespace Web.Repositories.SqlServer
             return wishList.UserId == userId;
         }
 
-        public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
+        public async Task<Result<List<WishList>>> GetUserWishListsAsync(Guid userId)
         {
-            return await _dbContext.WishLists
+            var userWishlists = await _dbContext.WishLists
                 .Include(w => w.WishListBooks)
                 .ThenInclude(wb => wb.Book)
                 .Where(wishlist => wishlist.UserId == userId)
                 .ToListAsync();
+
+            return new Result<List<WishList>>(userWishlists);
         }
 
         public async Task<Result<WishList>> GetWishListByNameAsync(string wishListName)

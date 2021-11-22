@@ -8,7 +8,7 @@ namespace Web.Repositories.Interfaces
     public interface IWishListRepository
     {
         Task<bool> UserOwnsWishList(string wishListName, Guid userId);
-        Task<List<WishList>> GetUserWishListsAsync(Guid userId);
+        Task<Result<List<WishList>>> GetUserWishListsAsync(Guid userId);
         Task<Result<WishList>> GetWishListByNameAsync(string wishListName);
         Task<Result> CreateWishListAsync(WishList wishList);
         Task<Result> DeleteWishListAsync(string wishListName);
