@@ -71,13 +71,18 @@ namespace Web.Repositories.SqlServer
             return changed > 0;
         }
 
-        public async Task<bool> DeleteWishListAsync(string wishListName)
+        public async Task<Result> DeleteWishListAsync(string wishListName)
         {
-            var wishlistToDelete = await _dbContext.WishLists.SingleOrDefaultAsync(w => w.Name == wishListName);
+            bool wishListExists = await _dbContext.WishLists.AsNoTracking().AnyAsync(w => w.Name == wishListName);
+            if (!wishListExists) return new Result(new WishListDoesNotExist(wishListName));
+
+            var wishlistToDelete = await _dbContext.WishLists.SingleAsync(w => w.Name == wishListName);
             _dbContext.WishLists.Remove(wishlistToDelete);
             int deleted = await _dbContext.SaveChangesAsync();
 
-            return deleted > 0;
+            return deleted > 0
+                ? new Result(null)
+                : new Result(new UnableToDelete(nameof(WishList)));
         }
 
         public async Task<Result> AddBookToWishListAsync(string wishListName, Guid bookId)

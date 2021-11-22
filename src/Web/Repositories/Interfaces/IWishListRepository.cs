@@ -13,7 +13,7 @@ namespace Web.Repositories.Interfaces
         Task<List<WishList>> GetUserWishListsAsync(Guid userId);
         Task<WishList> GetWishListByNameAsync(string wishListName);
         Task<bool> CreateWishListAsync(WishList wishList);
-        Task<bool> DeleteWishListAsync(string wishListName);
+        Task<Result> DeleteWishListAsync(string wishListName);
         Task<Result> AddBookToWishListAsync(string wishListName, Guid bookId);
         Task<Result> RemoveBookFromWishListAsync(string wishListName, Guid bookId, Guid cartId);
     }

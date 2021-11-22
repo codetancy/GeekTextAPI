@@ -77,22 +77,22 @@ namespace Web.Controllers.V1
             return CreatedAtAction(nameof(GetWishListByName), new {wishListName = wishlist.Name}, wishlist);
         }
 
-        // DELETE api/v1/wishlists/{wishlistName}
+        /// <summary>
+        /// Deletes a wishlist
+        /// </summary>
+        /// <param name="wishListName">Wishlist to delete</param>
+        /// <response code="200">Wishlist deleted successfully</response>
+        /// <response code="400">Invalid wishlist supplied</response>
+        /// <response code="403">User does not own wishlist</response>
         [HttpDelete("{wishListName}")]
         public async Task<IActionResult> DeleteWishList([FromRoute] string wishListName)
         {
             var userId = HttpContext.GetUserId();
+            bool userOwnsWishList = await _wishListRepository.UserOwnsWishList(wishListName, userId);
+            if (!userOwnsWishList) return Forbid();
 
-            bool exists = await _wishListRepository.WishListExists(wishListName);
-            if (!exists) return NotFound(new {Error = $"Wishlist {wishListName} does not exist."});
-
-            bool isOwner = await _wishListRepository.UserOwnsWishList(wishListName, userId);
-            if (!isOwner) return BadRequest(new { Error = "You do not own this wishlist."});
-
-            bool deleted = await _wishListRepository.DeleteWishListAsync(wishListName);
-            if (!deleted) return BadRequest(new {Error = "Unable to delete the wishlist."});
-
-            return NoContent();
+            var result = await _wishListRepository.DeleteWishListAsync(wishListName);
+            return result.Match(Ok, error => error.GetResultFromError());
         }
 
         /// <summary>
