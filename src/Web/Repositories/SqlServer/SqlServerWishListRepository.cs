@@ -44,20 +44,23 @@ namespace Web.Repositories.SqlServer
 
         public async Task<List<WishList>> GetUserWishListsAsync(Guid userId)
         {
-            return await _dbContext
-                .WishLists
+            return await _dbContext.WishLists
                 .Include(w => w.WishListBooks)
                 .ThenInclude(wb => wb.Book)
                 .Where(wishlist => wishlist.UserId == userId)
                 .ToListAsync();
         }
 
-        public async Task<WishList> GetWishListByNameAsync(string wishListName)
+        public async Task<Result<WishList>> GetWishListByNameAsync(string wishListName)
         {
-            return await _dbContext.WishLists
+            var wishlist =  await _dbContext.WishLists
                 .Include(w => w.WishListBooks)
                 .ThenInclude(wb => wb.Book)
                 .SingleOrDefaultAsync(wishlist => wishlist.Name == wishListName);
+
+            return wishlist is null
+                ? new Result<WishList>(new WishListDoesNotExist(wishListName))
+                : new Result<WishList>(wishlist);
         }
 
         public async Task<Result> CreateWishListAsync(WishList wishList)

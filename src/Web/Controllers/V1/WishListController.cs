@@ -41,17 +41,24 @@ namespace Web.Controllers.V1
             return Ok(mapping.ToListedResponse());
         }
 
-        // GET api/v1/wishlists/{wishListName}/books
+        /// <summary>
+        /// Gets a wishlist by name
+        /// </summary>
+        /// <param name="wishListName">Wishlist to search</param>
+        /// <response code="200">Requested wishlist</response>
+        /// <response code="404">Wishlist does not exist</response>
+        /// <returns></returns>
         [HttpGet("{wishListName}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetWishListByName([FromRoute] string wishListName)
         {
-            var wishList = await _wishListRepository.GetWishListByNameAsync(wishListName);
-            if (wishList is null) return NotFound(new {Error = $"Wishlist {wishListName} does not exist."});
+            var result = await _wishListRepository.GetWishListByNameAsync(wishListName);
 
-            var mapping = _mapper.Map<WishList, WishListResponse>(wishList);
-
-            return Ok(mapping.ToSingleResponse());
+            return result.Match(wishList =>
+            {
+                var mapping = _mapper.Map<WishListResponse>(wishList);
+                return Ok(mapping.ToSingleResponse());
+            }, error => error.GetResultFromError());
         }
 
         /// <summary>
