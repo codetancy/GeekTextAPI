@@ -20,7 +20,7 @@ namespace Web.Data.Configuration
                 .HasMaxLength(17);
 
             builder.Property(book => book.Synopsis)
-                .HasMaxLength(256);
+                .HasMaxLength(1024);
 
             builder.Property(book => book.UnitPrice)
                 .HasDefaultValue(0.0m)

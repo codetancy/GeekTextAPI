@@ -25,7 +25,7 @@ namespace Web.Data.Configuration
                 .IsRequired();
 
             builder.Property(author => author.Biography)
-                .HasMaxLength(256);
+                .HasMaxLength(1024);
 
             builder.Property(author => author.Publisher)
                 .HasMaxLength(64);
