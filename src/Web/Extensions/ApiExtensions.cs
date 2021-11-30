@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Web.Constants;
 using Web.Errors;
 
@@ -20,7 +20,7 @@ namespace Web.Extensions
         public static string GetUserName(this HttpContext httpContext)
         {
             var claims = httpContext.User.Claims;
-            return claims.SingleOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            return claims.SingleOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 
         public static IActionResult GetResultFromError(this IError error) =>

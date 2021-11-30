@@ -158,7 +158,7 @@ namespace Web
 
             app.UseRouting();
 
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             app.UseAuthentication();
             app.UseAuthorization();
 

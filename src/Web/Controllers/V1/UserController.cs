@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Web.Constants;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
 using Web.Data.Identities;
@@ -16,7 +17,7 @@ using Web.Services.Interfaces;
 namespace Web.Controllers.V1
 {
     [ApiController]
-    [Authorize(Roles = "Regular")]
+    [Authorize(Roles = RoleNames.User)]
     [Route("api/v1/users")]
     public class UserController : ControllerBase
     {
