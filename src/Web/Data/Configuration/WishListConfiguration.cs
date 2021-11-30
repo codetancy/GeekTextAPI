@@ -17,7 +17,7 @@ namespace Web.Data.Configuration
                 .IsRequired();
 
             builder.Property(wishlist => wishlist.Description)
-                .HasMaxLength(32);
+                .HasMaxLength(128);
 
             // Relationships
             builder.HasMany(wishlist => wishlist.WishListBooks)
