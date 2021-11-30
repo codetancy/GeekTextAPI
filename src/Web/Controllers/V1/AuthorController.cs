@@ -34,7 +34,7 @@ namespace Web.Controllers.V1
         {
             var filter = _mapper.Map<PaginationQuery, PaginationFilter>(query);
             var authors = await _authorRepository.GetAllAuthorsAsync(filter);
-            var mapping = _mapper.Map<List<Author>, List<AuthorResponse>>(authors);
+            var mapping = _mapper.Map<List<AuthorResponse>>(authors);
 
             return Ok(mapping.ToPagedResponse(_uriService, query.PageNumber, query.PageSize));
         }
@@ -47,7 +47,7 @@ namespace Web.Controllers.V1
 
             if (author is null) return NotFound(new { Error = $"Author {authorId} does not exist" });
 
-            var mapping = _mapper.Map<Author, AuthorResponse>(author);
+            var mapping = _mapper.Map<AuthorResponse>(author);
             return Ok(mapping.ToSingleResponse());
         }
 
@@ -60,7 +60,7 @@ namespace Web.Controllers.V1
             bool success = await _authorRepository.CreateAuthorAsync(author);
             if (!success) return BadRequest(new { Error = "Unable to create author" });
 
-            var mapping = _mapper.Map<Author, AuthorResponse>(author);
+            var mapping = _mapper.Map<AuthorResponse>(author);
             return CreatedAtAction(nameof(GetAuthorById), new { authorId = mapping.Id }, mapping.ToSingleResponse());
         }
 

@@ -11,6 +11,6 @@ namespace Web.Contracts.V1.Responses
         public string PenName { get; init; }
         public string Biography { get; init; }
         public string Publisher { get; init; }
-        public IEnumerable<SimpleBookResponse> Books { get; init; }
+        public IEnumerable<string> Books { get; init; }
     }
 }
