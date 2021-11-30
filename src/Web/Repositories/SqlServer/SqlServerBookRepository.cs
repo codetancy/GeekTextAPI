@@ -43,6 +43,7 @@ namespace Web.Repositories.SqlServer
 
             int skipSize = (filter.PageNumber - 1) * filter.PageSize;
             return await query
+                .Include(b => b.Authors)
                 .OrderBy(book => book.Title)
                 .Skip(skipSize)
                 .Take(filter.PageSize)
@@ -52,6 +53,7 @@ namespace Web.Repositories.SqlServer
         public async Task<List<Book>> GetTopSellersAsync(int range = 10)
         {
             return await _dbContext.Books.AsNoTracking()
+                .Include(b => b.Authors)
                 .OrderByDescending(book => book.CopiesSold)
                 .Take(range)
                 .ToListAsync();
@@ -59,7 +61,8 @@ namespace Web.Repositories.SqlServer
 
         public async Task<Book> GetBookByIdAsync(Guid bookId)
         {
-            return await _dbContext.Books.Include(book => book.Authors)
+            return await _dbContext.Books.AsNoTracking()
+                .Include(book => book.Authors)
                 .SingleOrDefaultAsync(book => book.Id == bookId);
         }
 
@@ -68,7 +71,8 @@ namespace Web.Repositories.SqlServer
             if (bookIsbn is null)
                 throw new ArgumentNullException(nameof(bookIsbn));
 
-            return await _dbContext.Books.Include(book => book.Authors)
+            return await _dbContext.Books.AsNoTracking()
+                .Include(book => book.Authors)
                 .SingleOrDefaultAsync(book => book.Isbn == bookIsbn);
         }
 
