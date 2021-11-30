@@ -64,9 +64,9 @@ namespace Web.Data.Configuration
                 .WithMany(author => author.Books)
                 .UsingEntity<BookAuthor>(
                     j => j.HasOne(ba => ba.Author).WithMany(a => a.BookAuthors)
-                        .OnDelete(DeleteBehavior.ClientCascade),
+                        .OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne(ba => ba.Book).WithMany(b => b.BookAuthors)
-                        .OnDelete(DeleteBehavior.ClientCascade));
+                        .OnDelete(DeleteBehavior.Cascade));
         }
     }
 }
