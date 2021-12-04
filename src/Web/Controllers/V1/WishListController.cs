@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Web.Constants;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
-using Web.Errors;
 using Web.Extensions;
 using Web.Models;
 using Web.Repositories.Interfaces;
 
 namespace Web.Controllers.V1
 {
-    [Authorize]
+    [Authorize(Roles = RoleNames.User)]
     [Route("api/v1/wishlists")]
     [ApiController]
     public class WishListController : ControllerBase

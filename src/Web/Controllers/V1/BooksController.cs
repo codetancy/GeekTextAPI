@@ -34,56 +34,52 @@ namespace Web.Controllers.V1
         /// <summary>
         /// Gets a list of books
         /// </summary>
-        /// <param name="GenreName"><inheritdoc cref="GetBooksQuery.GenreName"/></param>
+        /// <param name="query">Book search query parameter object</param>
         /// <response code="200">List of books</response>
         /// <response code="400">Invalid genre name/rating/page number/page size</response>
-        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetBooks([FromQuery] GetBooksQuery query)
         {
-            var filter = _mapper.Map<GetBooksQuery, BookSearchFilter>(query);
+            var filter = _mapper.Map<BookSearchFilter>(query);
             var books = await _bookRepository.GetBooksAsync(filter);
-            var mapping = _mapper.Map<List<Book>, List<BookResponse>>(books);
+            var mapping = _mapper.Map<List<BookResponse>>(books);
 
             return Ok(mapping.ToPagedResponse(_uriService, filter.PageNumber, filter.PageSize));
         }
 
         /// <summary>
-        /// Returns a list of the best selling books.
+        /// List of the best selling books.
         /// </summary>
-        /// <response code="200">List returned successfully</response>
-        /// <response code="400">Could not return the list of the best selling books</response>
-        /// <returns></returns>
+        /// <response code="200">Best selling books</response>
+        /// <response code="400">Bad request</response>
         [HttpGet("best-sellers")]
         public async Task<IActionResult> GetTopSellers()
         {
             var books = await _bookRepository.GetTopSellersAsync();
-            var mapping = _mapper.Map<List<Book>, List<BookResponse>>(books);
+            var mapping = _mapper.Map<List<BookResponse>>(books);
             return Ok(mapping.ToListedResponse());
         }
 
         /// <summary>
-        /// Gets books by their ID.
+        /// Retrieve book
         /// </summary>
-        /// <response code="200">Returned book successfully</response>
-        /// <response code="400">Unable to return a book with the given ISBN code</response>
-        /// <returns></returns>
+        /// <response code="200">Requested book</response>
+        /// <response code="400">Book not found</response>
         [HttpGet("{bookId:guid}")]
         public async Task<IActionResult> GetBookById([FromRoute] Guid bookId)
         {
             var book = await _bookRepository.GetBookByIdAsync(bookId);
             if (book is null) return NotFound(new { Error = $"Book {bookId} does not exist" });
 
-            var mapping = _mapper.Map<Book, BookResponse>(book);
+            var mapping = _mapper.Map<BookResponse>(book);
             return Ok(mapping.ToSingleResponse());
         }
 
         /// <summary>
-        /// Creates a book entry.
+        /// Creates book
         /// </summary>
-        /// <response code="200">Book entry created successfully</response>
-        /// <response code="400">Unable to create book entry</response>
-        /// <returns></returns>
+        /// <response code="200">Book created</response>
+        /// <response code="400">Invalid book</response>
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookRequest request)
         {
@@ -102,20 +98,19 @@ namespace Web.Controllers.V1
                 if (!valid) return BadRequest("At least one of the authors provided do not exist");
             }
 
-            var newBook = _mapper.Map<CreateBookRequest, Book>(request);
+            var newBook = _mapper.Map<Book>(request);
             bool success = await _bookRepository.CreateBookAsync(newBook, request.AuthorsIds);
             if (!success) return BadRequest(new { Error = "Unable to create book." });
 
-            var mapping = _mapper.Map<Book, BookResponse>(newBook);
+            var mapping = _mapper.Map<BookResponse>(newBook);
             return CreatedAtAction(nameof(GetBookById), new { bookId = mapping.Id }, mapping.ToSingleResponse());
         }
 
         /// <summary>
-        /// Deletes a book entry.
+        /// Deletes book
         /// </summary>
-        /// <response code="200">Book entry removed successfully</response>
-        /// <response code="400">Unable to remove book entry</response>
-        /// <returns></returns>
+        /// <response code="200">Book deleted</response>
+        /// <response code="400">Unable to delete book</response>
         [HttpDelete("{bookId:guid}")]
         public async Task<IActionResult> RemoveBook([FromRoute] Guid bookId)
         {
@@ -125,18 +120,6 @@ namespace Web.Controllers.V1
             bool deleted = await _bookRepository.DeleteBookAsync(bookId);
             if (!deleted) return BadRequest(new { Error = "Unable to delete book." });
             return NoContent();
-        }
-
-        /// <summary>
-        /// Updates a book entry.
-        /// </summary>
-        /// <response code="200">Book entry updated successfully</response>
-        /// <response code="400">Unable to update book entry</response>
-        /// <returns></returns>
-        [HttpPut("{bookId:guid}")]
-        public async Task<IActionResult> UpdateBook([FromBody] UpdateBookRequest request)
-        {
-            return await Task.FromResult(Ok());
         }
     }
 }

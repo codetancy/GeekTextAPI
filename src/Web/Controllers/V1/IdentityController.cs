@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Contracts.V1.Requests;
 using Web.Contracts.V1.Responses;
@@ -18,6 +19,11 @@ namespace Web.Controllers.V1
             _identityService = identityService;
         }
 
+        /// <summary>
+        /// Logs a user in with
+        /// </summary>
+        /// <param name="request"></param>
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -28,6 +34,11 @@ namespace Web.Controllers.V1
                 : BadRequest(new AuthFailedResponse(result.Errors.ToList()));
         }
 
+        /// <summary>
+        /// Creates a new account
+        /// </summary>
+        /// <param name="request"></param>
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequest request)
         {
